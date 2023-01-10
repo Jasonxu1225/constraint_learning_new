@@ -257,7 +257,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 # compute loss
                 td_error = distributional_cost_values_targets - distributional_cost_values_expected
                 huber_l = torch.where(td_error.abs() <= self.hl_kappa_k, 0.5 * td_error.pow(2), self.hl_kappa_k * (td_error.abs() - 0.5 * self.hl_kappa_k))
-                quantil_l = abs(self.policy.quantile_tau - (td_error.detach() < 0).float()) * huber_l / 1.0
+                quantil_l = abs(self.policy.quantile_tau.to(self.device) - (td_error.detach() < 0).float()) * huber_l.to(self.device) / 1.0
 
                 DQ_loss = quantil_l.sum(dim=1).mean(dim=1)  # keepdim=True if per weights get multipl
                 DQ_loss = DQ_loss.mean()

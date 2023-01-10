@@ -371,7 +371,10 @@ def train(config):
                                          seed=seed,
                                          log_file=log_file)
         # create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
-        create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
+        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
+            create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
+        else:
+            create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
         reset_policy = config['PPO']['reset_policy']
         reset_every = config['PPO']['reset_every'] if reset_policy else None
         forward_timesteps = config['PPO']['forward_timesteps']
@@ -590,7 +593,7 @@ def train(config):
                         new_expert_acs = expert_acs[0]
                         for i in range(1, len(expert_obs)):
                             new_expert_obs = np.concatenate([new_expert_obs, expert_obs[i]], axis=0)
-                        for i in range(1, len(expert_obs)):
+                        for i in range(1, len(expert_acs)):
                             new_expert_acs = np.concatenate([new_expert_acs, expert_acs[i]], axis=0)
                         expert_obs = new_expert_obs
                         expert_acs = new_expert_acs
