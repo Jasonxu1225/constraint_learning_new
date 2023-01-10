@@ -32,7 +32,7 @@ running:
   store_sample_rollouts: null
   expert_path: '../data/expert_data/BlockedHalf-cheetah/'
   use_buffer: False
-  store_by_game: True
+  store_by_game: False
 
 PPO:
   policy_name: 'DistributionalTwoCriticsMlpPolicy'

@@ -5,6 +5,7 @@ from stable_baselines3.ddpg import DDPG
 from stable_baselines3.dqn import DQN
 from stable_baselines3.ppo import PPO
 from stable_baselines3.ppo_lag import PPOLagrangian
+from stable_baselines3.ppo_lag import PPODistributionalLagrangian
 from stable_baselines3.sac import SAC
 from stable_baselines3.td3 import TD3
 

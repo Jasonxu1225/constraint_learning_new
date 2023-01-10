@@ -36,6 +36,9 @@ class RolloutBufferWithCostSamples(NamedTuple):
     old_cost_values: th.Tensor
     cost_advantages: th.Tensor
     cost_returns: th.Tensor
+    costs: th.Tensor
+    new_observations: th.Tensor
+    dones: th.Tensor
 
 class LagrangianBufferSamples(NamedTuple):
     observations: th.Tensor

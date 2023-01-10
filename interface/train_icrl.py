@@ -26,6 +26,7 @@ from constraint_models.constraint_net.variational_constraint_net import Variatio
 from constraint_models.constraint_net.constraint_net import ConstraintNet
 from exploration.exploration import ExplorationRewardCallback
 from stable_baselines3 import PPOLagrangian
+from stable_baselines3 import PPODistributionalLagrangian
 from stable_baselines3.common import logger
 
 from stable_baselines3.common.vec_env import sync_envs_normalization, VecNormalize
@@ -369,7 +370,8 @@ def train(config):
                                          train_env=train_env,
                                          seed=seed,
                                          log_file=log_file)
-        create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
+        # create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
+        create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
         reset_policy = config['PPO']['reset_policy']
         reset_every = config['PPO']['reset_every'] if reset_policy else None
         forward_timesteps = config['PPO']['forward_timesteps']

@@ -598,7 +598,7 @@ class RolloutBufferWithCost(BaseBuffer):
         if not self.generator_ready:
             for tensor in ["orig_observations", "observations", "actions", "log_probs", "reward_values",
                            "reward_advantages", "reward_returns", "cost_values", "cost_advantages",
-                           "cost_returns"]:
+                           "cost_returns", "costs", "new_observations", "dones"]:
                 self.__dict__[tensor] = self.swap_and_flatten(self.__dict__[tensor])
             self.generator_ready = True
 
@@ -623,5 +623,8 @@ class RolloutBufferWithCost(BaseBuffer):
             self.cost_values[batch_inds].flatten(),
             self.cost_advantages[batch_inds].flatten(),
             self.cost_returns[batch_inds].flatten(),
+            self.costs[batch_inds].flatten(),
+            self.new_observations[batch_inds],
+            self.dones[batch_inds].flatten(),
         )
         return RolloutBufferWithCostSamples(*tuple(map(self.to_torch, data)))

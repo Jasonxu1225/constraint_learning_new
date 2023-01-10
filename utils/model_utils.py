@@ -206,7 +206,13 @@ def load_ppo_config(config, train_env, seed, log_file):
         "verbose": config['verbose'],
         "seed": seed,
         "device": config['device'],
-        "policy_kwargs": dict(net_arch=get_net_arch(config, log_file))
+        "policy_kwargs": dict(net_arch=get_net_arch(config, log_file),
+                              N = config['QRDQN']['N_quantiles'],
+                              cost_quantile = config['QRDQN']['cost_quantile'],
+                              tau_update = config['QRDQN']['tau_update'],
+                              LR_QN = config['QRDQN']['LR_QN'],
+                              qnet_layers = config['QRDQN']['qnet_layers'],
+                              type = config['QRDQN']['type']),
     }
     if config["group"] == "PPO" or config["group"] == "GAIL":
         ppo_parameters.update({
