@@ -978,9 +978,13 @@ def get_plot_results_dir(env_id):
             ],
             "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 '../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
+                '../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_321/',
+                '../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
             ],
             "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/'
+                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
+                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_321/',
+                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
             ],
             "ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1": [
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1-multi_env-Nov-11-2022-16:34-seed_123/',

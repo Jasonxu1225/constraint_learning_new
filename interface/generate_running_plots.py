@@ -187,7 +187,7 @@ def generate_plots():
     img_size = None
     noise = '1e-1'
     plot_mode = 'Noise-{0}'.format(noise)
-    title = 'Stochastic Noise $\mathcal{N}(0,1E-2)$'
+    title = 'Stochastic Noise $\mathcal{N}(0,1E-1)$'
     method_names_labels_dict = {
         # "GAIL_HCWithPos-v0_with-action_noise-1e-1": "GACL",
         # "Binary_HCWithPos-v0_with-action_noise-1e-1": "BC2L",
