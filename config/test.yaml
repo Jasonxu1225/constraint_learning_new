@@ -4,8 +4,8 @@ device: 'cuda'
 verbose: 2
 env:
   config_path: null
-  train_env_id : 'HCWithPos-v0'
-  eval_env_id: 'HCWithPos-v0'  # 'HCWithPosTest-v0'
+  train_env_id : 'HCWithPosNoise-v0'
+  eval_env_id: 'HCWithPosNoise-v0'  # 'HCWithPosTest-v0'
   save_dir: '../save_model'
 #  expert_path: 'expert_data'
 #  expert_rollouts: 10

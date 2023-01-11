@@ -976,6 +976,12 @@ def get_plot_results_dir(env_id):
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-multi_env-Nov-11-2022-20:48-seed_123/',
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-multi_env-Nov-11-2022-23:14-seed_321/',
             ],
+            "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
+                '../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
+            ],
+            "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
+                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/'
+            ],
             "ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1": [
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1-multi_env-Nov-11-2022-16:34-seed_123/',
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1-multi_env-Nov-11-2022-18:05-seed_321/',
