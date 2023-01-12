@@ -200,6 +200,11 @@ def generate_plots():
         # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_noise-1e-1": "VICRL",
         "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "MECL",
         "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DMECL",
+        "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
+        "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
+        "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
+        "PPO_with-action_noise-1e-1-storebygame": "PPO",
+        "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GACL"
 
         # "GAIL_HCWithPos-v0_with-action_noise-1e-2": "GACL",
         # "Binary_HCWithPos-v0_with-action_noise-1e-2": "BC2L",
