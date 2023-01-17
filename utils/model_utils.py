@@ -238,15 +238,15 @@ def load_ppo_config(config, train_env, seed, log_file):
                                delta_p_ema_alpha=config['PPO']['proportional_cost_ema_alpha'],
                                delta_d_ema_alpha=config['PPO']['derivative_cost_ema_alpha'], ),
         })
-    elif config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
-        ppo_parameters.update({
-            "policy_kwargs": dict(net_arch=get_net_arch(config, log_file),
-                              N = config['QRDQN']['N_quantiles'],
-                              cost_quantile = config['QRDQN']['cost_quantile'],
-                              tau_update = config['QRDQN']['tau_update'],
-                              LR_QN = config['QRDQN']['LR_QN'],
-                              qnet_layers = config['QRDQN']['qnet_layers'],
-                              type = config['QRDQN']['type']),
+        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
+             ppo_parameters.update({
+                 "policy_kwargs": dict(net_arch=get_net_arch(config, log_file),
+                                       N = config['QRDQN']['N_quantiles'],
+                                       cost_quantile = config['QRDQN']['cost_quantile'],
+                                       tau_update = config['QRDQN']['tau_update'],
+                                       LR_QN = config['QRDQN']['LR_QN'],
+                                       qnet_layers = config['QRDQN']['qnet_layers'],
+                                       type = config['QRDQN']['type']),
         })
 
     else:
