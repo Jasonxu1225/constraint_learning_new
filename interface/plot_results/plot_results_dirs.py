@@ -982,9 +982,15 @@ def get_plot_results_dir(env_id):
                 '../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
             ],
             "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
-                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_321/',
-                '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
+                # '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
+                # '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_321/',
+                # '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
+                # '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR75-storebygame-multi_env-Jan-12-2023-19:07-seed_123/',
+                # '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR75-storebygame-multi_env-Jan-12-2023-19:07-seed_321/',
+                # '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR75-storebygame-multi_env-Jan-12-2023-19:07-seed_666/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87.5-storebygame-multi_env-Jan-12-2023-19:09-seed_123/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87.5-storebygame-multi_env-Jan-12-2023-19:09-seed_321/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87.5-storebygame-multi_env-Jan-12-2023-19:08-seed_666/',
             ],
             "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:12-seed_123/',
