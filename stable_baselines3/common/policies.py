@@ -7,6 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import gym
 import numpy as np
+import torch
 import torch as th
 from torch import nn
 
@@ -812,7 +813,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         # Default network architecture, from stable-baselines
         if net_arch is None:
             if features_extractor_class == FlattenExtractor:
-                net_arch = [dict(pi=[64, 64], vf=[64, 64], cvf=[64,64])]
+                net_arch = [dict(pi=[64, 64], vf=[64, 64], cvf=[256,256])]
             else:
                 net_arch = []
 
@@ -984,13 +985,25 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         with th.no_grad():
             distributional_cost_values = self.cost_value_net_local(qvalue_input)
             if self.type == 'VaR':
-                # Caculate the cost values using VaR method (75%)
+                # Caculate the cost values using VaR method
                 cost_values = distributional_cost_values[:,self.cost_quantile-1].view(distributional_cost_values.shape[0], 1)
             elif self.type == 'CVaR':
-                # Caculate the cost values using CVaR method (75%)
-                cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
-                cost_values = th.mean(cost_values, dim=1)
-                cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
+                # Caculate the cost values using CVaR method
+                VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
+                sum = torch.zeros(distributional_cost_values.shape[0], 1)
+                num = torch.zeros(distributional_cost_values.shape[0], 1)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+
+                for i in range (0, distributional_cost_values.shape[0]):
+                    for quant in range(0, self.N):
+                        quant_value = distributional_cost_values[i, quant]
+                        if quant_value >= VaR[i]:
+                            sum[i] = sum[i] + quant_value
+                            num[i] = num[i] + 1
+                    cost_values[i] = sum[i] / num[i]
+                # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
+                # cost_values = th.mean(cost_values, dim=1)
+                # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
 
         return actions, values, cost_values, log_prob
 
@@ -1037,13 +1050,25 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
             # cost_values = distributional_cost_values[:,self.cost_quantile-1]
             # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
             if self.type == 'VaR':
-                # Caculate the cost values using VaR method (75%)
+                # Caculate the cost values using VaR method
                 cost_values = distributional_cost_values[:,self.cost_quantile-1].view(distributional_cost_values.shape[0], 1)
             elif self.type == 'CVaR':
-                # Caculate the cost values using CVaR method (75%)
-                cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
-                cost_values = th.mean(cost_values, dim=1)
-                cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
+                # Caculate the cost values using CVaR method
+                VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
+                sum = torch.zeros(distributional_cost_values.shape[0], 1)
+                num = torch.zeros(distributional_cost_values.shape[0], 1)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+
+                for i in range (0, distributional_cost_values.shape[0]):
+                    for quant in range(0, self.N):
+                        quant_value = distributional_cost_values[i, quant]
+                        if quant_value >= VaR[i]:
+                            sum[i] = sum[i] + quant_value
+                            num[i] = num[i] + 1
+                    cost_values[i] = sum[i] / num[i]
+                # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
+                # cost_values = th.mean(cost_values, dim=1)
+                # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
 
         return values, cost_values, log_prob, distribution.entropy()
 
