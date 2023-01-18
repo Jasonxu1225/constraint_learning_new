@@ -198,13 +198,18 @@ def generate_plots():
         # # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e0-1e0_clr-5e-3_no_is_piv-1e1_noise-1e-1": "VICRL1",
         # # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-2-1e-2_clr-5e-3_no_is_piv-1e1_noise-1e-1": "VICRL2",
         # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_noise-1e-1": "VICRL",
-        "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "MECL",
-        "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DMECL",
-        "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
-        "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
-        "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
-        "PPO_with-action_noise-1e-1-storebygame": "PPO",
-        "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GACL"
+
+        # "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "MECL",
+        # "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DMECL",
+        # "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
+        # "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
+        # "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
+        # "PPO_with-action_noise-1e-1-storebygame": "PPO",
+        # "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GACL",
+        # "DVICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL",
+        "DICRL_test-storebygame": "DICRL_test",
+        "DICRL_test1-storebygame": "DICRL_test1",
+        "DICRL_test2-storebygame": "DICRL_test2",
 
         # "GAIL_HCWithPos-v0_with-action_noise-1e-2": "GACL",
         # "Binary_HCWithPos-v0_with-action_noise-1e-2": "BC2L",
@@ -770,7 +775,11 @@ def generate_plots():
         "Ram-0.2": "-",
         "Ram-0": "-",
         "VICRL_Hard": "-",
-        "DMECL":"-" # 'distributional ICRL'
+        "DMECL":"-", # 'distributional ICRL'
+        "DVICRL":"-", # distributional VICRL
+        "DICRL_test":"-",
+        "DICRL_test1":"-",
+        "DICRL_test2":"-",
     }
 
     linestyle_dict = {}
