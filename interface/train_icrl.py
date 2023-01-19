@@ -28,7 +28,7 @@ from exploration.exploration import ExplorationRewardCallback
 from stable_baselines3 import PPOLagrangian
 from stable_baselines3 import PPODistributionalLagrangian
 from stable_baselines3.common import logger
-
+from stable_baselines3.common.base_class import set_random_seed
 from stable_baselines3.common.vec_env import sync_envs_normalization, VecNormalize
 from utils.data_utils import read_args, load_config, ProgressBarManager, del_and_make, load_expert_data, \
     get_input_features_dim, process_memory, print_resource, load_expert_data_tmp
@@ -84,6 +84,7 @@ def train(config):
 
     # if num_threads is not None:
     #     config['env']['num_threads'] = int(num_threads)
+    set_random_seed(seed)
 
     print(json.dumps(config, indent=4), file=log_file, flush=True)
     current_time_date = datetime.datetime.now().strftime('%b-%d-%Y-%H:%M')
