@@ -1001,7 +1001,15 @@ def get_plot_results_dir(env_id):
             "DICRL_test2-storebygame": [
                 '../save_model/ICRL-HC/test2_var75-multi_env-Jan-17-2023-14:32-seed_123/',
             ],
-
+            "ICRL_test-storebygame": [
+                '../save_model/ICRL-HC/test_icrl-multi_env-Jan-19-2023-20:44-seed_123/',
+            ],
+            "ICRL_test1-storebygame": [
+                '../save_model/ICRL-HC/test_icrl1-multi_env-Jan-19-2023-20:45-seed_123/',
+            ],
+            "ICRL_test2-storebygame": [
+                '../save_model/ICRL-HC/test_icrl2-multi_env-Jan-19-2023-20:45-seed_123/',
+            ],
             "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 # '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:12-seed_123/',
                 # '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:15-seed_321/',
