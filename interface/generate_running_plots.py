@@ -212,9 +212,13 @@ def generate_plots():
         # "DICRL_test1-storebygame": "DICRL_test1",
         # "DICRL_test2-storebygame": "DICRL_test2",
 
-        "ICRL_test-storebygame": "ICRL_test",
-        "ICRL_test1-storebygame": "ICRL_test1",
-        "ICRL_test2-storebygame": "ICRL_test2",
+        # "ICRL_test-storebygame": "ICRL_test",
+        # "ICRL_test1-storebygame": "ICRL_test1",
+        # "ICRL_test2-storebygame": "ICRL_test2",
+
+        "ICRL_test": "ICRL_test",
+        "ICRL_test1": "ICRL_test1",
+        "ICRL_test2": "ICRL_test2",
 
         # "GAIL_HCWithPos-v0_with-action_noise-1e-2": "GACL",
         # "Binary_HCWithPos-v0_with-action_noise-1e-2": "BC2L",

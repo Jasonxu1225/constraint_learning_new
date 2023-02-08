@@ -1010,6 +1010,18 @@ def get_plot_results_dir(env_id):
             "ICRL_test2-storebygame": [
                 '../save_model/ICRL-HC/test_icrl2-multi_env-Jan-19-2023-20:45-seed_123/',
             ],
+            "ICRL_test": [
+                # '/home/xusheng/constraint-learning-benchmark/save_model/ICRL-HC/test_icrl-multi_env-Feb-06-2023-20:34-seed_123/',
+                '../save_model/ICRL-HC/test_icrl-multi_env-Feb-06-2023-22:37-seed_123/',
+            ],
+            "ICRL_test1": [
+                # '/home/xusheng/constraint-learning-benchmark/save_model/ICRL-HC/test_icrl1-multi_env-Feb-06-2023-20:34-seed_123/',
+                '../save_model/ICRL-HC/test_icrl1-multi_env-Feb-06-2023-22:40-seed_123/',
+            ],
+            "ICRL_test2": [
+                # '/home/xusheng/constraint-learning-benchmark/save_model/ICRL-HC/test_icrl2-multi_env-Feb-06-2023-20:35-seed_123/',
+                '../save_model/ICRL-HC/test_icrl2-multi_env-Feb-06-2023-22:40-seed_123/',
+            ],
             "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 # '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:12-seed_123/',
                 # '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:15-seed_321/',
