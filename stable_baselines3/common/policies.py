@@ -809,6 +809,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         LR_QN: float = 0.001,
         qnet_layers: Optional[List[int]] = [256, 256],
         type: str = 'VaR',
+        prob_yita = 0.01,
     ):
         # Default network architecture, from stable-baselines
         if net_arch is None:
@@ -838,6 +839,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         )
         self.cost_quantile = cost_quantile
         self.type = type
+        self.prob_yita = prob_yita
         self.dis_build(lr_schedule, N, tau_update, LR_QN, qnet_layers)
 
 
@@ -1004,6 +1006,17 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
                 # cost_values = th.mean(cost_values, dim=1)
                 # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
+            elif self.type == 'Prob':
+
+                num = torch.zeros(distributional_cost_values.shape[0], 1)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+
+                for i in range(0, distributional_cost_values.shape[0]):
+                    for quant in range(0, self.N):
+                        quant_value = distributional_cost_values[i, quant]
+                        if quant_value >= self.prob_yita:
+                            num[i] = num[i] + 1
+                    cost_values[i] = num[i] *1.0 / self.N
 
         return actions, values, cost_values, log_prob
 
@@ -1069,6 +1082,17 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
                 # cost_values = th.mean(cost_values, dim=1)
                 # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
+            elif self.type == 'Prob':
+
+                num = torch.zeros(distributional_cost_values.shape[0], 1)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+
+                for i in range(0, distributional_cost_values.shape[0]):
+                    for quant in range(0, self.N):
+                        quant_value = distributional_cost_values[i, quant]
+                        if quant_value >= self.prob_yita:
+                            num[i] = num[i] + 1
+                    cost_values[i] = num[i] *1.0 / self.N
 
         return values, cost_values, log_prob, distribution.entropy()
 

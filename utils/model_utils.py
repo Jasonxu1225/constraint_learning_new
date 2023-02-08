@@ -246,7 +246,8 @@ def load_ppo_config(config, train_env, seed, log_file):
                                        tau_update = config['QRDQN']['tau_update'],
                                        LR_QN = config['QRDQN']['LR_QN'],
                                        qnet_layers = config['QRDQN']['qnet_layers'],
-                                       type = config['QRDQN']['type']),
+                                       type = config['QRDQN']['type'],
+                                       prob_yita = config['QRDQN']['prob_yita']),
         })
 
     else:
