@@ -143,6 +143,8 @@ def train(config):
                                                 'train_env_id'] else None,
                                             noise_std=config['env']['noise_std'] if 'Noise' in config['env'][
                                                 'train_env_id'] else None,
+                                            noise_seed=seed if 'Noise' in config['env'][
+                                                'train_env_id'] else None,
                                             circle_info=config['env']['circle_info'] if 'Circle' in config[
                                                 'env']['train_env_id'] else None,
                                             max_scene_per_env=config['env']['max_scene_per_env']
@@ -176,6 +178,8 @@ def train(config):
                                               noise_mean=config['env']['noise_mean'] if 'Noise' in config['env'][
                                                   'train_env_id'] else None,
                                               noise_std=config['env']['noise_std'] if 'Noise' in config['env'][
+                                                  'train_env_id'] else None,
+                                              noise_seed=seed if 'Noise' in config['env'][
                                                   'train_env_id'] else None,
                                               circle_info=config['env']['circle_info'] if 'Circle' in config[
                                                   'env']['train_env_id'] else None,

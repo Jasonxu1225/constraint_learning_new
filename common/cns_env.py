@@ -69,7 +69,7 @@ def make_train_env(env_id, config_path, save_dir, group='PPO', base_seed=0, num_
                     env_configs['meta_scenario_path'] += '_debug'
     else:
         if 'Noise' in env_id:
-            env_configs = {'noise_mean': kwargs['noise_mean'], 'noise_std': kwargs['noise_std']}
+            env_configs = {'noise_mean': kwargs['noise_mean'], 'noise_std': kwargs['noise_std'], 'noise_seed': kwargs['noise_seed']}
         elif 'Circle' in env_id:
             env_configs = {
                 'r': kwargs['circle_info'][0],
@@ -157,7 +157,7 @@ def make_eval_env(env_id, config_path, save_dir, group='PPO', num_threads=1,
             env_configs["test_env"] = True
     else:
         if 'Noise' in env_id:
-            env_configs = {'noise_mean': kwargs['noise_mean'], 'noise_std': kwargs['noise_std']}
+            env_configs = {'noise_mean': kwargs['noise_mean'], 'noise_std': kwargs['noise_std'], 'noise_seed': kwargs['noise_seed']}
         elif 'Circle' in env_id:
             env_configs = {
                 'r': kwargs['circle_info'][0],
