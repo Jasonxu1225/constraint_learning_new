@@ -79,6 +79,7 @@ QRDQN:
   LR_QN: 0.001
   qnet_layers: [256, 256]
   type: VaR
+  prob_yita: null
 
 CN:
   cn_learning_rate: 0.005
