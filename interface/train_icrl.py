@@ -484,7 +484,7 @@ def train(config):
         #                                                      obs_var=var,
         #                                                      env_configs=env_configs,
         #                                                      current_progress_remaining=current_progress_remaining)
-        if 'WGW' in config['env']['train_env_id']:
+        if 'WGW' in config['env']['train_env_id'] or config['running']['store_by_game']==True:
             backward_metrics = constraint_net.train_gridworld_nn(iterations=config['CN']['backward_iters'],
                                                                  nominal_obs=sample_obs,
                                                                  nominal_acs=sample_acts,
@@ -593,15 +593,15 @@ def train(config):
                 if not 'WGW' in config['env']['train_env_id']:
                     record_info_name = config['env']["record_info_names"][record_info_idx]
                     plot_record_infos, plot_costs = zip(*sorted(zip(record_infos[record_info_name], costs)))
-                    # if isinstance(expert_acs, list):
-                    #     new_expert_obs = expert_obs[0]
-                    #     new_expert_acs = expert_acs[0]
-                    #     for i in range(1, len(expert_obs)):
-                    #         new_expert_obs = np.concatenate([new_expert_obs, expert_obs[i]], axis=0)
-                    #     for i in range(1, len(expert_acs)):
-                    #         new_expert_acs = np.concatenate([new_expert_acs, expert_acs[i]], axis=0)
-                    #     expert_obs = new_expert_obs
-                    #     expert_acs = new_expert_acs
+                    if isinstance(expert_acs, list):
+                        new_expert_obs = expert_obs[0]
+                        new_expert_acs = expert_acs[0]
+                        for i in range(1, len(expert_obs)):
+                            new_expert_obs = np.concatenate([new_expert_obs, expert_obs[i]], axis=0)
+                        for i in range(1, len(expert_acs)):
+                            new_expert_acs = np.concatenate([new_expert_acs, expert_acs[i]], axis=0)
+                        expert_obs = new_expert_obs
+                        expert_acs = new_expert_acs
 
                     if len(expert_acs.shape) == 1:
                         empirical_input_means = np.concatenate([expert_obs,
