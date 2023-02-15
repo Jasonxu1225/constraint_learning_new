@@ -476,31 +476,31 @@ def train(config):
         mean, var = None, None
         if config['CN']['cn_normalize']:
             mean, var = sampling_env.obs_rms.mean, sampling_env.obs_rms.var
-        backward_metrics = constraint_net.train_gridworld_nn(iterations=config['CN']['backward_iters'],
-                                                             nominal_obs=sample_obs,
-                                                             nominal_acs=sample_acts,
-                                                             episode_lengths=sample_ls,
-                                                             obs_mean=mean,
-                                                             obs_var=var,
-                                                             env_configs=env_configs,
-                                                             current_progress_remaining=current_progress_remaining)
-        # if 'WGW' in config['env']['train_env_id']:
-        #     backward_metrics = constraint_net.train_gridworld_nn(iterations=config['CN']['backward_iters'],
-        #                                                          nominal_obs=sample_obs,
-        #                                                          nominal_acs=sample_acts,
-        #                                                          episode_lengths=sample_ls,
-        #                                                          obs_mean=mean,
-        #                                                          obs_var=var,
-        #                                                          env_configs=env_configs,
-        #                                                          current_progress_remaining=current_progress_remaining)
-        # else:
-        #     backward_metrics = constraint_net.train_nn(iterations=config['CN']['backward_iters'],
-        #                                                nominal_obs=sample_obs,
-        #                                                nominal_acs=sample_acts,
-        #                                                episode_lengths=sample_ls,
-        #                                                obs_mean=mean,
-        #                                                obs_var=var,
-        #                                                current_progress_remaining=current_progress_remaining)
+        # backward_metrics = constraint_net.train_gridworld_nn(iterations=config['CN']['backward_iters'],
+        #                                                      nominal_obs=sample_obs,
+        #                                                      nominal_acs=sample_acts,
+        #                                                      episode_lengths=sample_ls,
+        #                                                      obs_mean=mean,
+        #                                                      obs_var=var,
+        #                                                      env_configs=env_configs,
+        #                                                      current_progress_remaining=current_progress_remaining)
+        if 'WGW' in config['env']['train_env_id']:
+            backward_metrics = constraint_net.train_gridworld_nn(iterations=config['CN']['backward_iters'],
+                                                                 nominal_obs=sample_obs,
+                                                                 nominal_acs=sample_acts,
+                                                                 episode_lengths=sample_ls,
+                                                                 obs_mean=mean,
+                                                                 obs_var=var,
+                                                                 env_configs=env_configs,
+                                                                 current_progress_remaining=current_progress_remaining)
+        else:
+            backward_metrics = constraint_net.train_nn(iterations=config['CN']['backward_iters'],
+                                                       nominal_obs=sample_obs,
+                                                       nominal_acs=sample_acts,
+                                                       episode_lengths=sample_ls,
+                                                       obs_mean=mean,
+                                                       obs_var=var,
+                                                       current_progress_remaining=current_progress_remaining)
 
         mem_prev, time_prev = print_resource(mem_prev=mem_prev, time_prev=time_prev,
                                              process_name='Training CN model', log_file=log_file)
@@ -593,15 +593,15 @@ def train(config):
                 if not 'WGW' in config['env']['train_env_id']:
                     record_info_name = config['env']["record_info_names"][record_info_idx]
                     plot_record_infos, plot_costs = zip(*sorted(zip(record_infos[record_info_name], costs)))
-                    if isinstance(expert_acs, list):
-                        new_expert_obs = expert_obs[0]
-                        new_expert_acs = expert_acs[0]
-                        for i in range(1, len(expert_obs)):
-                            new_expert_obs = np.concatenate([new_expert_obs, expert_obs[i]], axis=0)
-                        for i in range(1, len(expert_acs)):
-                            new_expert_acs = np.concatenate([new_expert_acs, expert_acs[i]], axis=0)
-                        expert_obs = new_expert_obs
-                        expert_acs = new_expert_acs
+                    # if isinstance(expert_acs, list):
+                    #     new_expert_obs = expert_obs[0]
+                    #     new_expert_acs = expert_acs[0]
+                    #     for i in range(1, len(expert_obs)):
+                    #         new_expert_obs = np.concatenate([new_expert_obs, expert_obs[i]], axis=0)
+                    #     for i in range(1, len(expert_acs)):
+                    #         new_expert_acs = np.concatenate([new_expert_acs, expert_acs[i]], axis=0)
+                    #     expert_obs = new_expert_obs
+                    #     expert_acs = new_expert_acs
 
                     if len(expert_acs.shape) == 1:
                         empirical_input_means = np.concatenate([expert_obs,
