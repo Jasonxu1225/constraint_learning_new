@@ -10,7 +10,7 @@ from tqdm import tqdm
 # Main
 # -----------------------
 import gym
-import mujuco_environment.custom_envs
+# import mujuco_environment.custom_envs
 
 config_path = '../mujuco_environment/custom_envs/envs/configs/WGW-setting1.yaml'
 with open(config_path, "r") as config_file:

@@ -199,26 +199,18 @@ def generate_plots():
         # # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-2-1e-2_clr-5e-3_no_is_piv-1e1_noise-1e-1": "VICRL2",
         # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_noise-1e-1": "VICRL",
 
-        # "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "MECL",
-        # "DICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DMECL",
-        # "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
-        # "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
-        # # "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
-        # # "PPO_with-action_noise-1e-1-storebygame": "PPO",
-        # "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GACL",
-        # "DVICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL",
+        "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "ICRL",
+        "DICRL_VaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-75",
+        "DICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-87.5",
+        "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
+        "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
+        # "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
+        # "PPO_with-action_noise-1e-1-storebygame": "PPO",
+        "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GAIL",
+        "DVICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL",
 
-        # "DICRL_test-storebygame": "DICRL_test",
-        # "DICRL_test1-storebygame": "DICRL_test1",
-        # "DICRL_test2-storebygame": "DICRL_test2",
 
-        # "ICRL_test-storebygame": "ICRL_test",
-        # "ICRL_test1-storebygame": "ICRL_test1",
-        # "ICRL_test2-storebygame": "ICRL_test2",
 
-        "ICRL_test": "ICRL_test",
-        "ICRL_test1": "ICRL_test1",
-        "ICRL_test2": "ICRL_test2",
 
         # "GAIL_HCWithPos-v0_with-action_noise-1e-2": "GACL",
         # "Binary_HCWithPos-v0_with-action_noise-1e-2": "BC2L",
@@ -748,6 +740,7 @@ def generate_plots():
         'PPO_lag2': '-',
         'Bound': '-',
         "GACL": ':',  # 'GAIL',
+        "GAIL": ':',
         "GACL-0.1": ":",
         "GACL-0.3": "--",
         "GACL-0.5": "-.",
@@ -758,6 +751,7 @@ def generate_plots():
         "BC2L-0.5": "-.",
         "BC2L-Full": "-",
         "MECL": '-.',  # 'ICRL',
+        "ICRL": '-.',
         "MECL-0.1": ":",
         "MECL-0.3": "--",
         "MECL-0.5": "-.",
@@ -784,14 +778,10 @@ def generate_plots():
         "Ram-0.2": "-",
         "Ram-0": "-",
         "VICRL_Hard": "-",
-        "DMECL":"-", # 'distributional ICRL'
+        "DICRL":"-", # 'distributional ICRL'
+        "DICRL-75": "-",  # 'distributional ICRL'
+        "DICRL-87.5": "-",  # 'distributional ICRL'
         "DVICRL":"-", # distributional VICRL
-        "DICRL_test":"-",
-        "DICRL_test1":"-",
-        "DICRL_test2":"-",
-        "ICRL_test": "-",
-        "ICRL_test1": "-",
-        "ICRL_test2": "-",
     }
 
     linestyle_dict = {}
