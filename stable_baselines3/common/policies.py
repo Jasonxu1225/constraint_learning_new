@@ -992,9 +992,9 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
             elif self.type == 'CVaR':
                 # Caculate the cost values using CVaR method
                 VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
-                sum = torch.zeros(distributional_cost_values.shape[0], 1)
-                num = torch.zeros(distributional_cost_values.shape[0], 1)
-                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+                sum = torch.zeros(distributional_cost_values.shape[0], 1).to(self.device)
+                num = torch.zeros(distributional_cost_values.shape[0], 1).to(self.device)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1).to(self.device)
 
                 for i in range (0, distributional_cost_values.shape[0]):
                     for quant in range(0, self.N):
@@ -1067,10 +1067,10 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 cost_values = distributional_cost_values[:,self.cost_quantile-1].view(distributional_cost_values.shape[0], 1)
             elif self.type == 'CVaR':
                 # Caculate the cost values using CVaR method
-                VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
-                sum = torch.zeros(distributional_cost_values.shape[0], 1)
-                num = torch.zeros(distributional_cost_values.shape[0], 1)
-                cost_values = torch.zeros(distributional_cost_values.shape[0], 1)
+                VaR = (distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)).to(self.device)
+                sum = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                num = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                cost_values = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
 
                 for i in range (0, distributional_cost_values.shape[0]):
                     for quant in range(0, self.N):
