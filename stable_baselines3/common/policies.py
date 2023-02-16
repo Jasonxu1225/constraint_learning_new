@@ -992,17 +992,27 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
             elif self.type == 'CVaR':
                 # Caculate the cost values using CVaR method
                 VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
-                sum = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
-                num = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
-                cost_values = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1).to(self.device)
+                for i in range(0, distributional_cost_values.shape[0]):
+                    selected_cost_values = (th.where(distributional_cost_values[i] < VaR[i], 0, distributional_cost_values[i]))
+                    #selected_cost_values = selected_cost_values.view(-1, distributional_cost_values.shape[1])
+                    non_zero_selected_cost_values = selected_cost_values[selected_cost_values.nonzero(as_tuple=True)]
+                    avg_cost_values = non_zero_selected_cost_values.mean()
+                    cost_values[i] = avg_cost_values
 
-                for i in range (0, distributional_cost_values.shape[0]):
-                    for quant in range(0, self.N):
-                        quant_value = distributional_cost_values[i, quant]
-                        if quant_value >= VaR[i]:
-                            sum[i] = sum[i] + quant_value
-                            num[i] = num[i] + 1
-                    cost_values[i] = sum[i] / num[i]
+                # VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
+                # sum = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                # num = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                # cost_values = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                #
+                # for i in range (0, distributional_cost_values.shape[0]):
+                #     for quant in range(0, self.N):
+                #         quant_value = distributional_cost_values[i, quant]
+                #         if quant_value >= VaR[i]:
+                #             sum[i] = sum[i] + quant_value
+                #             num[i] = num[i] + 1
+                #     cost_values[i] = sum[i] / num[i]
+
                 # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
                 # cost_values = th.mean(cost_values, dim=1)
                 # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
@@ -1059,7 +1069,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         qvalue_input = th.cat([features, actions], dim=1)
 
         with th.no_grad():
-            distributional_cost_values = self.cost_value_net_local(qvalue_input)
+            distributional_cost_values = self.cost_value_net_local(qvalue_input).cpu()
             # cost_values = distributional_cost_values[:,self.cost_quantile-1]
             # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
             if self.type == 'VaR':
@@ -1068,17 +1078,27 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
             elif self.type == 'CVaR':
                 # Caculate the cost values using CVaR method
                 VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
-                sum = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
-                num = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
-                cost_values = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                cost_values = torch.zeros(distributional_cost_values.shape[0], 1).to(self.device)
+                for i in range(0, distributional_cost_values.shape[0]):
+                    selected_cost_values = (th.where(distributional_cost_values[i] < VaR[i], 0, distributional_cost_values[i]))
+                    #selected_cost_values = selected_cost_values.view(-1, distributional_cost_values.shape[1])
+                    non_zero_selected_cost_values = selected_cost_values[selected_cost_values.nonzero(as_tuple=True)]
+                    avg_cost_values = non_zero_selected_cost_values.mean()
+                    cost_values[i] = avg_cost_values
 
-                for i in range (0, distributional_cost_values.shape[0]):
-                    for quant in range(0, self.N):
-                        quant_value = distributional_cost_values[i, quant]
-                        if quant_value >= VaR[i]:
-                            sum[i] = sum[i] + quant_value
-                            num[i] = num[i] + 1
-                    cost_values[i] = sum[i] / num[i]
+                # VaR = distributional_cost_values[:, self.cost_quantile - 1].view(distributional_cost_values.shape[0], 1)
+                # sum = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                # num = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                # cost_values = (torch.zeros(distributional_cost_values.shape[0], 1)).to(self.device)
+                #
+                # for i in range (0, distributional_cost_values.shape[0]):
+                #     for quant in range(0, self.N):
+                #         quant_value = distributional_cost_values[i, quant]
+                #         if quant_value >= VaR[i]:
+                #             sum[i] = sum[i] + quant_value
+                #             num[i] = num[i] + 1
+                #     cost_values[i] = sum[i] / num[i]
+
                 # cost_values = distributional_cost_values[:,self.cost_quantile-1: self.N]
                 # cost_values = th.mean(cost_values, dim=1)
                 # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
