@@ -291,9 +291,11 @@ class HalfCheetahWithPosNoise(HalfCheetahWithPos):
         xposafter = self.sim.data.qpos[0]
 
         # add noise to the transition function
-        np.random.seed(self.noise_seed)
+        #np.random.seed(self.noise_seed)
+        np.random.seed(100)
         qpos = self.sim.data.qpos.flat[:] + np.random.normal(self.noise_mean, self.noise_std)
-        np.random.seed(self.noise_seed)
+        #np.random.seed(self.noise_seed)
+        np.random.seed(100)
         qvel = self.sim.data.qvel.flat[:] + np.random.normal(self.noise_mean, self.noise_std)
 
         self.set_state(qpos=qpos, qvel=qvel)
