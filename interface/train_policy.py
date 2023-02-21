@@ -18,7 +18,7 @@ from utils.env_utils import check_if_duplicate_seed
 from common.cns_env import make_train_env, make_eval_env, sync_envs_normalization_ppo
 from utils.plot_utils import plot_curve
 from exploration.exploration import ExplorationRewardCallback
-from stable_baselines3 import PPO, PPOLagrangian
+from stable_baselines3 import PPO, PPOLagrangian, PPODistributionalLagrangian
 from stable_baselines3.common import logger
 from common.cns_evaluation import evaluate_icrl_policy
 from stable_baselines3.common.vec_env import VecNormalize
@@ -104,6 +104,12 @@ def train(args):
                                             log_file=log_file,
                                             part_data=partial_data,
                                             multi_env=multi_env,
+                                            noise_mean=config['env']['noise_mean'] if 'Noise' in config['env'][
+                                                'train_env_id'] else None,
+                                            noise_std=config['env']['noise_std'] if 'Noise' in config['env'][
+                                                'train_env_id'] else None,
+                                            noise_seed=seed if 'Noise' in config['env'][
+                                                'train_env_id'] else None,
                                             circle_info=config['env']['circle_info'] if 'Circle' in config[
                                                 'env']['train_env_id'] else None,
                                             )
@@ -121,6 +127,12 @@ def train(args):
                                           cost_info_str=config['env']['cost_info_str'],
                                           log_file=log_file,
                                           part_data=partial_data,
+                                          noise_mean=config['env']['noise_mean'] if 'Noise' in config['env'][
+                                              'train_env_id'] else None,
+                                          noise_std=config['env']['noise_std'] if 'Noise' in config['env'][
+                                              'train_env_id'] else None,
+                                          noise_seed=seed if 'Noise' in config['env'][
+                                              'train_env_id'] else None,
                                           circle_info=config['env']['circle_info'] if 'Circle' in config[
                                               'env']['train_env_id'] else None,
                                           )
