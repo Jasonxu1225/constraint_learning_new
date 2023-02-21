@@ -200,14 +200,16 @@ def generate_plots():
         # "VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_noise-1e-1": "VICRL",
 
         "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "ICRL",
-        "DICRL_VaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-75",
-        "DICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-87.5",
+        "DICRL_VaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-VaR75",
+        "DICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-VaR87.5",
+        "DICRL_CVaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-CVaR75",
+        "DICRL_CVaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DICRL-CVaR75",
         "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
         "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
-        # "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
+        "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
         # "PPO_with-action_noise-1e-1-storebygame": "PPO",
         "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GAIL",
-        "DVICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL",
+        "DVICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL-VaR87.5",
 
 
 
@@ -779,9 +781,11 @@ def generate_plots():
         "Ram-0": "-",
         "VICRL_Hard": "-",
         "DICRL":"-", # 'distributional ICRL'
-        "DICRL-75": "-",  # 'distributional ICRL'
-        "DICRL-87.5": "-",  # 'distributional ICRL'
-        "DVICRL":"-", # distributional VICRL
+        "DICRL-VaR75": "-",  # 'distributional ICRL'
+        "DICRL-VaR87.5": "-",  # 'distributional ICRL'
+        "DICRL-CVaR75": "-",  # 'distributional ICRL'
+        "DICRL-CVaR75": "-",  # 'distributional ICRL'
+        "DVICRL-VaR87.5":"-", # distributional VICRL
     }
 
     linestyle_dict = {}
