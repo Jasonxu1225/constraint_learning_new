@@ -280,7 +280,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 # Center but NOT rescale cost advantages
                 #cost_advantages = rollout_data.cost_advantages - rollout_data.cost_advantages.mean()
                 #cost_advantages /= (rollout_data.cost_advantages.std() + 1e-8)
-                cost_values = cost_values - cost_values.mean()
+                cost_values = (cost_values - cost_values.mean()).to(self.device)
 
                 # Ratio between old and new policy, should be one at the first iteration
                 ratio = th.exp(log_prob - rollout_data.old_log_prob)
