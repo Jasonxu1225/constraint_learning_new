@@ -194,7 +194,10 @@ def train(args):
                                          seed=seed,
                                          log_file=log_file)
         forward_timesteps = config['PPO']['forward_timesteps']
-        create_policy_agent = lambda: PPOLagrangian(**ppo_parameters)
+        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
+            create_policy_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
+        else:
+            create_policy_agent = lambda: PPOLagrangian(**ppo_parameters)
     elif config['group'] == 'PI-Lag':
         iteration_parameters = load_policy_iteration_config(config=config,
                                                             env_configs=env_configs,
