@@ -977,9 +977,9 @@ def get_plot_results_dir(env_id):
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-multi_env-Nov-11-2022-23:14-seed_321/',
             ],
             "ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:04-seed_123/',
-                '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:04-seed_321/',
-                #'../save_model/ICRL-HC/ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-10-2023-21:55-seed_666/',
+                '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-18:45-seed_123/',
+                '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-18:45-seed_321/',
+                '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:13-seed_666/',
             ],
             "DICRL_VaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 # '../save_model/ICRL-HC/DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR99-storebygame-multi_env-Jan-10-2023-21:55-seed_123/',
@@ -993,16 +993,18 @@ def get_plot_results_dir(env_id):
                 # '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87.5-storebygame-multi_env-Jan-12-2023-19:08-seed_666/',
             ],
             "DICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87-multi_env-Feb-16-2023-14:06-seed_123/',
-                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87-multi_env-Feb-16-2023-14:06-seed_321/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87-multi_env-Feb-21-2023-18:55-seed_123/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87-multi_env-Feb-21-2023-18:55-seed_321/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-VaR87-multi_env-Feb-21-2023-19:11-seed_666/',
             ],
             "DICRL_CVaR75_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR75-storebygame-multi_env-Feb-16-2023-17:02-seed_123/',
                 '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR75-storebygame-multi_env-Feb-16-2023-17:03-seed_321/',
             ],
             "DICRL_CVaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR87-multi_env-Feb-16-2023-17:04-seed_123/',
-                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR87-multi_env-Feb-16-2023-17:04-seed_321/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR87-multi_env-Feb-21-2023-18:56-seed_123/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR87-multi_env-Feb-21-2023-18:56-seed_321/',
+                '../save_model/ICRL-HC/train_DICRL_HCWithPos-v0_with-action_noise-1e-1-CVaR87-multi_env-Feb-21-2023-19:11-seed_666/',
             ],
             "VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
                 # '../save_model/VICRL-HC/train_VICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_piv-1e1_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:12-seed_123/',
@@ -1018,14 +1020,14 @@ def get_plot_results_dir(env_id):
                 #'../save_model/VICRL-HC/train_DVICRL_HCWithPos-v0_with_action_with_buffer_p-9e-1-1e-1_clr-5e-3_no_is_noise-1e-1-VaR75-storebygame-multi_env-Jan-17-2023-11:46-seed_666/',
             ],
             "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:34-seed_123/',
-                '../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:34-seed_321/',
-                #'../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-11-2023-23:04-seed_666/',
+                '../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:02-seed_123/',
+                '../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:02-seed_321/',
+                '../save_model/Binary-HC/train_Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:07-seed_666/',
             ],
             "PPO_lag_with-action_noise-1e-1-storebygame": [
-                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-16-2023-14:52-seed_123/',
-                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-16-2023-14:52-seed_321/',
-                # '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Jan-11-2023-23:02-seed_666/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-21-2023-19:38-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-21-2023-19:38-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-21-2023-19:39-seed_666/',
             ],
             "PPO_with-action_noise-1e-1-storebygame": [
                 # '../save_model/PPO-HC/train_ppo_HCWithPos-v0-storebygame-multi_env-Jan-11-2023-22:38-seed_123/',
@@ -1033,9 +1035,9 @@ def get_plot_results_dir(env_id):
                 # '../save_model/PPO-HC/train_ppo_HCWithPos-v0-storebygame-multi_env-Jan-11-2023-22:39-seed_666/',
             ],
             "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": [
-                '../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:48-seed_123/',
-                '../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-16-2023-14:48-seed_321/',
-                #'../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Jan-12-2023-10:06-seed_666/',
+                '../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:10-seed_123/',
+                '../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:10-seed_321/',
+                '../save_model/GAIL-HC/train_GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame-multi_env-Feb-21-2023-19:10-seed_666/',
             ],
             "ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1": [
                 '../save_model/ICRL-HC/train_ICRL_HCWithPos-v0_with-action_piv-1e1_noise-1e-1-multi_env-Nov-11-2022-16:34-seed_123/',
