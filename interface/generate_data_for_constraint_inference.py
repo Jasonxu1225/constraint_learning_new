@@ -68,7 +68,7 @@ class CommonRoadVecEnv(DummyVecEnv):
 LOGGER = logging.getLogger(__name__)
 
 
-def create_environments(env_id: str, viz_path: str, test_path: str, model_path: str, group: str, num_threads: int = 1,
+def create_environments(config: None, env_id: str, viz_path: str, test_path: str, model_path: str, group: str, num_threads: int = 1,
                         normalize=True, env_kwargs=None, testing_env=False, part_data=False) -> CommonRoadVecEnv:
     """
     Create CommonRoad vectorized environment
@@ -86,6 +86,9 @@ def create_environments(env_id: str, viz_path: str, test_path: str, model_path: 
             env_kwargs['train_reset_config_path'] += '_debug'
             env_kwargs['test_reset_config_path'] += '_debug'
             env_kwargs['meta_scenario_path'] += '_debug'
+    if 'Noise' in env_id:
+        env_kwargs_addnoise = {"noise_mean": config['env']['noise_mean'], "noise_std": config['env']['noise_std'], "noise_seed": 0}
+        env_kwargs.update(**env_kwargs_addnoise)
 
     # Create environment
     envs = [make_env(env_id=env_id,
@@ -197,7 +200,8 @@ def run():
             env_configs = yaml.safe_load(config_file)
     else:
         env_configs = {}
-    env = create_environments(env_id=config['env']['train_env_id'],
+    env = create_environments(config=config,
+                              env_id=config['env']['train_env_id'],
                               viz_path=None,
                               test_path=evaluation_path,
                               model_path=env_stats_loading_path,
