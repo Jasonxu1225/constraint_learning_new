@@ -265,6 +265,8 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 cost_value_losses.append(DQ_loss.item())
 
                 DQ_loss.backward()
+                # Clip grad norm
+                th.nn.utils.clip_grad_norm_(self.policy.cost_value_net_local.parameters(), self.max_grad_norm)
                 self.policy.optimizer_QN.step()
 
                 # soft update target net with update_tau

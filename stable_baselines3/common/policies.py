@@ -958,7 +958,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 module.apply(partial(self.init_weights, gain=gain))
 
         # Setup optimizer with initial learning rate
-        self.optimizer_QN = th.optim.Adam(self.cost_value_net_local.parameters(), lr=self.LR_QN)
+        # self.optimizer_QN = th.optim.Adam(self.cost_value_net_local.parameters(), lr=self.LR_QN)
+        self.optimizer_QN = self.optimizer_class(self.cost_value_net_local.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
         self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
 
 
