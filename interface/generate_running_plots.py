@@ -207,6 +207,7 @@ def generate_plots():
         #"VICRL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "VICRL",
         "Binary_HCWithPos-v0_with-action_noise-1e-1-storebygame":"BC2L",
         "PPO_lag_with-action_noise-1e-1-storebygame": "PPO_lag",
+        "PPO_dis_lag_with-action_noise-1e-1-storebygame": "PPO_dis_lag",
         # "PPO_with-action_noise-1e-1-storebygame": "PPO",
         "GAIL_HCWithPos-v0_with-action_noise-1e-1-storebygame": "GAIL",
         #"DVICRL_VaR87.5_HCWithPos-v0_with-action_noise-1e-1-storebygame": "DVICRL-VaR87.5",
@@ -737,6 +738,7 @@ def generate_plots():
     linestyle_all = {
         "PPO": '-' if plot_mode == 'part' else '--',
         "PPO_lag": '-' if plot_mode == 'part' else '--',
+        "PPO_dis_lag": '-' if plot_mode == 'part' else '--',
         "PI-Lag": '-' if plot_mode == 'part' else '--',
         'PPO_lag1': '-',
         'PPO_lag2': '-',
