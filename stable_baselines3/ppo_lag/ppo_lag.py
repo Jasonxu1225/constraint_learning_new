@@ -100,6 +100,8 @@ class PPOLagrangian(OnPolicyWithCostAlgorithm):
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
+        recon_obs: bool = False,
+        env_configs: dict = None,
     ):
 
         super(PPOLagrangian, self).__init__(
@@ -124,6 +126,8 @@ class PPOLagrangian(OnPolicyWithCostAlgorithm):
             create_eval_env=create_eval_env,
             seed=seed,
             _init_setup_model=False,
+            recon_obs=recon_obs,
+            env_configs=env_configs
         )
 
         self.algo_type = algo_type

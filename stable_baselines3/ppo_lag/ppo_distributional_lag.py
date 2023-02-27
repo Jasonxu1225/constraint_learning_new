@@ -103,6 +103,8 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
+        recon_obs: bool = False,
+        env_configs: dict = False,
     ):
 
         super(PPODistributionalLagrangian, self).__init__(
@@ -127,6 +129,8 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
             create_eval_env=create_eval_env,
             seed=seed,
             _init_setup_model=False,
+            recon_obs=recon_obs,
+            env_configs=env_configs
         )
         self.hl_kappa_k = 1.0 #hubel loss kappa k
         self.cost_gamma = cost_gamma

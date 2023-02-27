@@ -286,6 +286,8 @@ class OnPolicyWithCostAlgorithm(BaseAlgorithm):
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
+        recon_obs: bool = False,
+        env_configs: dict = None,
     ):
 
         super(OnPolicyWithCostAlgorithm, self).__init__(
@@ -314,6 +316,8 @@ class OnPolicyWithCostAlgorithm(BaseAlgorithm):
         self.cost_vf_coef = cost_vf_coef
         self.max_grad_norm = max_grad_norm
         self.rollout_buffer = None
+        self.recon_obs = recon_obs
+        self.env_configs = env_configs
 
         if _init_setup_model:
             self._setup_model()
@@ -333,6 +337,9 @@ class OnPolicyWithCostAlgorithm(BaseAlgorithm):
             cost_gae_lambda=self.cost_gae_lambda,
             n_envs=self.n_envs,
         )
+        if self.recon_obs == True:
+            policy_kwargs_add = {'recon_obs': self.recon_obs, 'env_configs': self.env_configs}
+            self.policy_kwargs.update(**policy_kwargs_add)
 
         self.policy = self.policy_class(
             self.observation_space,
@@ -377,6 +384,8 @@ class OnPolicyWithCostAlgorithm(BaseAlgorithm):
 
             with th.no_grad():
                 # Convert to pytorch tensor
+                # if self.recon_obs:
+                #     self._last_obs = self.idx2vector(self._last_obs, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
                 obs_tensor = th.as_tensor(self._last_obs).to(self.device)
                 actions, reward_values, cost_values, log_probs = self.policy.forward(obs_tensor)
             actions = actions.cpu().numpy()
@@ -413,6 +422,10 @@ class OnPolicyWithCostAlgorithm(BaseAlgorithm):
             if isinstance(self.action_space, gym.spaces.Discrete):
                 # Reshape in case of discrete action
                 actions = actions.reshape(-1, 1)
+            # if self.recon_obs:
+            #     orig_obs = self.idx2vector(orig_obs, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
+            #     new_obs = self.idx2vector(new_obs, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
+            #     self._last_original_obs = self.idx2vector(self._last_original_obs, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
             rollout_buffer.add(self._last_obs, self._last_original_obs, new_obs, orig_obs, actions,
                                rewards, costs, orig_costs, self._last_dones, reward_values,
                                cost_values, log_probs)

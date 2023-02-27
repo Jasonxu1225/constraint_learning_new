@@ -249,6 +249,10 @@ def load_ppo_config(config, train_env, seed, log_file):
                                        type = config['QRDQN']['type'],
                                        prob_yita = config['QRDQN']['prob_yita']),
         })
+        if 'WGW' in config['env']['train_env_id'] and config['group'] == "PPO-Lag":
+            ppo_parameters.update({
+                "recon_obs": config['PPO']['recon_obs'],
+            })
 
     else:
         raise ValueError("Unknown Group {0}".format(config['group']))

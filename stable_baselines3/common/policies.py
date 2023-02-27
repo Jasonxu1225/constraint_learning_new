@@ -300,6 +300,27 @@ class BasePolicy(BaseModel):
         low, high = self.action_space.low, self.action_space.high
         return low + (0.5 * (scaled_action + 1.0) * (high - low))
 
+    def idx2vector(self, indices, height, width):
+        vector_all = []
+        if isinstance(indices, torch.Tensor):
+            for idx in indices:
+                map = np.zeros(shape=[height, width])
+                x, y = int(torch.round(idx[0])), int(torch.round(idx[1]))
+                # if x - idx[0] != 0:
+                #     print('debug')
+                map[x, y] = 1  # + idx[0] - x + idx[1] - y
+                vector_all.append(map.flatten())
+            return torch.Tensor(np.array(vector_all)).to(self.device)
+        else:
+            for idx in indices:
+                map = np.zeros(shape=[height, width])
+                x, y = int(round(idx[0], 0)), int(round(idx[1], 0))
+                # if x - idx[0] != 0:
+                #     print('debug')
+                map[x, y] = 1  # + idx[0] - x + idx[1] - y
+                vector_all.append(map.flatten())
+            return np.asarray(vector_all)
+
 
 class ActorCriticPolicy(BasePolicy):
     """
@@ -619,6 +640,8 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
+        recon_obs: bool = False,
+        env_configs: dict = None,
     ):
         # Default network architecture, from stable-baselines
         if net_arch is None:
@@ -646,8 +669,11 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
               optimizer_class,
               optimizer_kwargs
         )
+        self.recon_obs = recon_obs
+        self.env_configs = env_configs
+        self.recon_build(lr_schedule, recon_obs)
 
-    def _build_mlp_extractor(self) -> None:
+    def recon_build_mlp_extractor(self, recon_obs) -> None:
         """
         Create the policy and value networks.
         Part of the layers can be shared.
@@ -655,17 +681,19 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
         # Note: If net_arch is None and some features extractor is used,
         #       net_arch here is an empty list and mlp_extractor does not
         #       really contain any layers (acts like an identity module).
+        if recon_obs == True:
+            self.features_dim = self.env_configs['map_height'] * self.env_configs['map_width']
         self.mlp_extractor = MlpExtractor(self.features_dim, net_arch=self.net_arch, activation_fn=self.activation_fn,
                                           create_cvf=True)
 
-    def _build(self, lr_schedule: Callable[[float], float]) -> None:
+    def recon_build(self, lr_schedule: Callable[[float], float], recon_obs) -> None:
         """
         Create the networks and the optimizer.
 
         :param lr_schedule: Learning rate schedule
             lr_schedule(1) is the initial learning rate
         """
-        self._build_mlp_extractor()
+        self.recon_build_mlp_extractor(recon_obs)
 
         latent_dim_pi = self.mlp_extractor.latent_dim_pi
 
@@ -743,6 +771,8 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
         """
         # Preprocess the observation if needed
         features = self.extract_features(obs)
+        if self.recon_obs:
+            features = self.idx2vector(features, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
         latent_pi, latent_vf, latent_cvf = self.mlp_extractor(features)
 
         # Features for sde

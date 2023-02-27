@@ -194,6 +194,10 @@ def train(args):
                                          seed=seed,
                                          log_file=log_file)
         forward_timesteps = config['PPO']['forward_timesteps']
+        if 'WGW' in config['env']['train_env_id']:
+            ppo_parameters.update({
+                "env_configs": env_configs,
+            })
         if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
             create_policy_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
         else:
@@ -281,11 +285,12 @@ def train(args):
             traj_visualization_2d(config=config,
                                   observations=orig_observations,
                                   save_path=save_path, )
-            plt.figure(figsize=(5, 5))
-            plt.matshow(policy_agent.v_m, origin='lower')
-            plt.gca().xaxis.set_ticks_position('bottom')
-            plt.colorbar()
-            plt.savefig(os.path.join(save_path, "v_m_aid.png"))
+            if 'PPO' not in config['group']:
+                plt.figure(figsize=(5, 5))
+                plt.matshow(policy_agent.v_m, origin='lower')
+                plt.gca().xaxis.set_ticks_position('bottom')
+                plt.colorbar()
+                plt.savefig(os.path.join(save_path, "v_m_aid.png"))
 
         # Save
         if itr % config['running']['save_every'] == 0:
