@@ -673,7 +673,7 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
         self.env_configs = env_configs
         self.recon_build(lr_schedule, recon_obs)
 
-    def recon_build_mlp_extractor(self, recon_obs) -> None:
+    def recon_build_mlp_extractor(self, recon_obs: bool = False) -> None:
         """
         Create the policy and value networks.
         Part of the layers can be shared.
@@ -686,7 +686,7 @@ class ActorTwoCriticsPolicy(ActorCriticPolicy):
         self.mlp_extractor = MlpExtractor(self.features_dim, net_arch=self.net_arch, activation_fn=self.activation_fn,
                                           create_cvf=True)
 
-    def recon_build(self, lr_schedule: Callable[[float], float], recon_obs) -> None:
+    def recon_build(self, lr_schedule: Callable[[float], float], recon_obs: bool = False) -> None:
         """
         Create the networks and the optimizer.
 
@@ -833,6 +833,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
+        recon_obs: bool = False,
+        env_configs: dict = None,
         N: int = 64,
         cost_quantile:int = 48,
         tau_update: float = 0.01,
@@ -867,14 +869,16 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
               optimizer_class,
               optimizer_kwargs,
         )
+        self.recon_obs = recon_obs
+        self.env_configs = env_configs
         self.cost_quantile = cost_quantile
         self.type = type
         self.prob_yita = prob_yita
-        self.dis_build(lr_schedule, N, tau_update, LR_QN, qnet_layers)
+        self.dis_build(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
 
 
 
-    def _build_mlp_extractor(self) -> None:
+    def recon_build_mlp_extractor(self, recon_obs: bool = False) -> None:
         """
         Create the policy and value networks.
         Part of the layers can be shared.
@@ -906,11 +910,13 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         )
         '''
         #  mlpextractor---------------------------------------------------------------------------------------------------------
+        if recon_obs == True:
+            self.features_dim = self.env_configs['map_height'] * self.env_configs['map_width']
         self.mlp_extractor = MlpExtractor(self.features_dim, net_arch=self.net_arch, activation_fn=self.activation_fn,
                                           create_cvf=False)
 
 
-    def dis_build(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers) -> None:
+    def dis_build(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
         """
         Create the networks and the optimizer.
 
@@ -918,7 +924,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
             lr_schedule(1) is the initial learning rate
         """
 
-        self._build_mlp_extractor()
+        self.recon_build_mlp_extractor(recon_obs)
         self.N = N
         self.quantile_tau = th.FloatTensor([i / self.N for i in range(1, self.N + 1)])
         self.tau_update = tau_update
@@ -1013,6 +1019,10 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
 
         # cost_values = self.cost_value_net(feature+action)
         features = self.extract_features(obs)
+        if self.recon_obs:
+            features = self.idx2vector(features, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
+        if len(actions.shape) != len(features.shape):
+            actions = actions.view(features.shape[0], -1)
         qvalue_input = th.cat([features, actions], dim=1)
 
         with th.no_grad():
@@ -1072,6 +1082,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         """
         # Preprocess the observation if needed
         features = self.extract_features(obs)
+        if self.recon_obs:
+            features = self.idx2vector(features, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
         latent_pi, latent_vf= self.mlp_extractor(features)
 
         # Features for sde
@@ -1097,10 +1109,14 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         # cost_values = self.cost_value_net(feature+action)
 
         features = self.extract_features(obs)
+        if self.recon_obs:
+            features = self.idx2vector(features, height=self.env_configs['map_height'], width=self.env_configs['map_width'])
+        if len(actions.shape) != len(features.shape):
+            actions = actions.view(features.shape[0], -1)
         qvalue_input = th.cat([features, actions], dim=1)
 
         with th.no_grad():
-            distributional_cost_values = self.cost_value_net_local(qvalue_input).cpu()
+            distributional_cost_values = self.cost_value_net_local(qvalue_input)
             # cost_values = distributional_cost_values[:,self.cost_quantile-1]
             # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
             if self.type == 'VaR':

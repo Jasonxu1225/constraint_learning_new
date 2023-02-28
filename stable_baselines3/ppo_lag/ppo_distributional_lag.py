@@ -15,7 +15,7 @@ from stable_baselines3.common.on_policy_algorithm import \
 from stable_baselines3.common.policies import ActorCriticPolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback
 from stable_baselines3.common.utils import explained_variance, get_schedule_fn
-
+from utils.data_utils import idx2vector
 
 class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
     """
@@ -238,6 +238,11 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 if isinstance(self.action_space, spaces.Discrete):
                     # Convert discrete action from float to long
                     new_actions = new_actions.long().flatten()
+                if self.recon_obs:
+                    new_features = idx2vector(new_features, height=self.env_configs['map_height'],
+                                              width=self.env_configs['map_width']).to(self.device)
+                if len(new_actions.shape) != len(new_features.shape):
+                    new_actions = new_actions.view(new_features.shape[0], -1)
 
                 with torch.no_grad():
                     distributional_cost_values_targets_next = self.policy.cost_value_net_target(th.cat([new_features, new_actions], dim=1))
@@ -254,7 +259,11 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 #_latent_pi, _latent_vf, _latent_cvf, _latent_sde = self.policy._get_latent(rollout_data.new_observations)
                 with torch.no_grad():
                     features = self.policy.extract_features(rollout_data.observations)
-
+                if self.recon_obs:
+                    features = idx2vector(features, height=self.env_configs['map_height'],
+                                          width=self.env_configs['map_width']).to(self.device)
+                if len(actions.shape) != len(features.shape):
+                    actions = actions.view(features.shape[0], -1)
                 distributional_cost_values_expected = self.policy.cost_value_net_local(th.cat([features, actions], dim=1))
                 distributional_cost_values_expected = distributional_cost_values_expected.unsqueeze(-1)
 
