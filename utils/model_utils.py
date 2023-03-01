@@ -238,7 +238,7 @@ def load_ppo_config(config, train_env, seed, log_file):
                                delta_p_ema_alpha=config['PPO']['proportional_cost_ema_alpha'],
                                delta_d_ema_alpha=config['PPO']['derivative_cost_ema_alpha'], ),
         })
-        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
+        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy" and 'QRDQN' in config.keys():
              ppo_parameters.update({
                  "policy_kwargs": dict(net_arch=get_net_arch(config, log_file),
                                        N = config['QRDQN']['N_quantiles'],
@@ -247,8 +247,21 @@ def load_ppo_config(config, train_env, seed, log_file):
                                        LR_QN = config['QRDQN']['LR_QN'],
                                        qnet_layers = config['QRDQN']['qnet_layers'],
                                        type = config['QRDQN']['type'],
-                                       prob_yita = config['QRDQN']['prob_yita']),
+                                       prob_yita = config['QRDQN']['prob_yita'],
+                                       method = 'QRDQN'),
         })
+        if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy" and 'IQN' in config.keys():
+            ppo_parameters.update({
+                "policy_kwargs": dict(net_arch=get_net_arch(config, log_file),
+                                      N=config['IQN']['n_tau'],
+                                      cost_quantile=config['IQN']['cost_quantile'],
+                                      tau_update=config['IQN']['tau_update'],
+                                      LR_QN=config['IQN']['LR_QN'],
+                                      qnet_layers=config['IQN']['qnet_layers'],
+                                      type=config['IQN']['type'],
+                                      prob_yita=config['IQN']['prob_yita'],
+                                      method='IQN'),
+            })
         if 'WGW' in config['env']['train_env_id'] and config['group'] == "PPO-Lag":
             ppo_parameters.update({
                 "recon_obs": config['PPO']['recon_obs'],

@@ -842,6 +842,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         qnet_layers: Optional[List[int]] = [256, 256],
         type: str = 'VaR',
         prob_yita = 0.01,
+        method: str = None,
     ):
         # Default network architecture, from stable-baselines
         if net_arch is None:
@@ -874,7 +875,11 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         self.cost_quantile = cost_quantile
         self.type = type
         self.prob_yita = prob_yita
-        self.dis_build(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
+        self.method = method
+        if method == 'QRDQN':
+            self.dis_build_QRDQN(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
+        elif method == 'IQN':
+            self.dis_build_IQN(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
 
 
 
@@ -916,7 +921,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                                           create_cvf=False)
 
 
-    def dis_build(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
+    def dis_build_QRDQN(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
         """
         Create the networks and the optimizer.
 
@@ -998,6 +1003,94 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         self.optimizer_QN = self.optimizer_class(self.cost_value_net_local.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
         self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
 
+    def dis_build_IQN(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
+        """
+        Create the networks and the optimizer.
+
+        :param lr_schedule: Learning rate schedule
+            lr_schedule(1) is the initial learning rate
+        """
+        self.recon_build_mlp_extractor(recon_obs)
+        self.N = N
+        self.n_cos = 64
+        self.pis = th.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos).to(self.device)
+        self.tau_update = tau_update
+        self.LR_QN = LR_QN
+        self.qnet_layers = qnet_layers
+
+        latent_dim_pi = self.mlp_extractor.latent_dim_pi
+
+        # Separate feature extractor for gSDE
+        if self.sde_net_arch is not None:
+            self.sde_features_extractor, latent_sde_dim = create_sde_features_extractor(
+                self.features_dim, self.sde_net_arch, self.activation_fn
+            )
+        #  action net--------------------------------------------------------------------------------------------------------------
+        #  Linear(in_features=64, out_features=6, bias=True)
+        if isinstance(self.action_dist, DiagGaussianDistribution):
+            self.action_net, self.log_std = self.action_dist.proba_distribution_net(
+                latent_dim=latent_dim_pi, log_std_init=self.log_std_init
+            )
+        elif isinstance(self.action_dist, StateDependentNoiseDistribution):
+            latent_sde_dim = latent_dim_pi if self.sde_net_arch is None else latent_sde_dim
+            self.action_net, self.log_std = self.action_dist.proba_distribution_net(
+                latent_dim=latent_dim_pi, latent_sde_dim=latent_sde_dim, log_std_init=self.log_std_init
+            )
+        elif isinstance(self.action_dist, CategoricalDistribution):
+            self.action_net = self.action_dist.proba_distribution_net(latent_dim=latent_dim_pi)
+        elif isinstance(self.action_dist, MultiCategoricalDistribution):
+            self.action_net = self.action_dist.proba_distribution_net(latent_dim=latent_dim_pi)
+        elif isinstance(self.action_dist, BernoulliDistribution):
+            self.action_net = self.action_dist.proba_distribution_net(latent_dim=latent_dim_pi)
+        else:
+            raise NotImplementedError(f"Unsupported distribution '{self.action_dist}'.")
+        # value net--------------------------------------------------------------------------------------------------------------
+        # Linear(in_features=64, out_features=1, bias=True)
+        self.value_net = nn.Linear(self.mlp_extractor.latent_dim_vf, 1)
+        # cost net--------------------------------------------------------------------------------------------------------------
+        # Linear(in_features=64, out_features=1, bias=True)
+
+        action_dim = get_action_dim(self.action_space)
+
+        self.head = th.nn.Linear(self.features_dim + action_dim, self.qnet_layers[0])
+        self.cos_embedding = th.nn.Linear(self.n_cos, self.qnet_layers[0])
+        self.ff_1 = nn.Linear(self.qnet_layers[0], self.qnet_layers[1])
+        self.ff_2 = nn.Linear(self.qnet_layers[0], 1)
+
+        self.cost_value_net_target = nn.Sequential(
+            torch.relu(self.head),
+
+        )
+
+        q_net_local = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
+        self.cost_value_net_local = nn.Sequential(*q_net_local)
+
+
+        # self.cost_value_net_target = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
+        # self.cost_value_net_local = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
+
+        # Init weights: use orthogonal initialization
+        # with small initial weight for the output
+        if self.ortho_init:
+            # TODO: check for features_extractor
+            # Values from stable-baselines.
+            # feature_extractor/mlp values are
+            # originally from openai/baselines (default gains/init_scales).
+            module_gains = {
+                self.features_extractor: np.sqrt(2),
+                self.mlp_extractor: np.sqrt(2),
+                self.action_net: 0.01,
+                self.value_net: 1,
+                self.cost_value_net_target: 1,
+                self.cost_value_net_local: 1,
+            }
+            for module, gain in module_gains.items():
+                module.apply(partial(self.init_weights, gain=gain))
+
+        # Setup optimizer with initial learning rate
+        # self.optimizer_QN = th.optim.Adam(self.cost_value_net_local.parameters(), lr=self.LR_QN)
+        self.optimizer_QN = self.optimizer_class(self.cost_value_net_local.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
+        self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> Tuple[th.Tensor, th.Tensor, th.Tensor]: #important-----------------
         """
@@ -1186,6 +1279,16 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(self.updata_tau * local_param.data + (1.0 - self.updata_tau) * target_param.data)
+
+    def calc_cos(self, batch_size, n_tau=8):
+        """
+        Calculating the cosinus values depending on the number of tau samples
+        """
+        taus = torch.rand(batch_size, n_tau).to(self.device).unsqueeze(-1) #(batch_size, n_tau, 1)
+        cos = torch.cos(taus*self.pis)
+
+        assert cos.shape == (batch_size,n_tau,self.n_cos), "cos shape is incorrect"
+        return cos, taus
 
 
 class ActorCriticCnnPolicy(ActorCriticPolicy):
@@ -1461,3 +1564,61 @@ def register_policy(name: str, policy: Type[BasePolicy]) -> None:
         if _policy_registry[sub_class][name] != policy:
             raise ValueError(f"Error: the name {name} is already registered for a different policy, will not override.")
     _policy_registry[sub_class][name] = policy
+
+
+class IQN(nn.Module, BaseModel):
+    def __init__(self, state_size, action_size, layer_size, N:int = 8):
+        super(IQN, self).__init__()
+        self.input_shape = state_size
+        self.action_size = action_size
+        self.K = 32
+        self.N = N
+        self.n_cos = 64
+        self.layer_size = layer_size
+        self.pis = torch.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos).to(
+            self.device)  # Starting from 0 as in the paper
+
+        self.head = nn.Linear(self.input_shape[0], layer_size)  # cound be a cnn
+        self.cos_embedding = nn.Linear(self.n_cos, layer_size)
+        self.ff_1 = nn.Linear(layer_size, layer_size)
+        self.ff_2 = nn.Linear(layer_size, action_size)
+        # weight_init([self.head_1, self.ff_1])
+
+    def calc_cos(self, batch_size, n_tau=8):
+        """
+        Calculating the cosinus values depending on the number of tau samples
+        """
+        taus = torch.rand(batch_size, n_tau).to(self.device).unsqueeze(-1)  # (batch_size, n_tau, 1)
+        cos = torch.cos(taus * self.pis)
+
+        assert cos.shape == (batch_size, n_tau, self.n_cos), "cos shape is incorrect"
+        return cos, taus
+
+    def forward(self, input, num_tau=8):
+        """
+        Quantile Calculation depending on the number of tau
+
+        Return:
+        quantiles [ shape of (batch_size, num_tau, action_size)]
+        taus [shape of ((batch_size, num_tau, 1))]
+
+        """
+        batch_size = input.shape[0]
+
+        x = torch.relu(self.head(input))
+        cos, taus = self.calc_cos(batch_size, num_tau)  # cos shape (batch, num_tau, layer_size)
+        cos = cos.view(batch_size * num_tau, self.n_cos)
+        cos_x = torch.relu(self.cos_embedding(cos)).view(batch_size, num_tau, self.layer_size)  # (batch, n_tau, layer)
+
+        # x has shape (batch, layer_size) for multiplication –> reshape to (batch, 1, layer)
+        x = (x.unsqueeze(1) * cos_x).view(batch_size * num_tau, self.layer_size)
+
+        x = torch.relu(self.ff_1(x))
+        out = self.ff_2(x)
+
+        return out.view(batch_size, num_tau, self.action_size), taus
+
+    def get_action(self, inputs):
+        quantiles, _ = self.forward(inputs, self.N)
+        actions = quantiles.mean(dim=1)
+        return actions
