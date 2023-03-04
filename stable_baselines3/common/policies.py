@@ -992,8 +992,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 self.mlp_extractor: np.sqrt(2),
                 self.action_net: 0.01,
                 self.value_net: 1,
-                self.cost_value_net_target: 1,
-                self.cost_value_net_local: 1,
+                self.cost_value_net_target: np.sqrt(2),
+                self.cost_value_net_local: np.sqrt(2),
             }
             for module, gain in module_gains.items():
                 module.apply(partial(self.init_weights, gain=gain))
@@ -1013,7 +1013,6 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         self.recon_build_mlp_extractor(recon_obs)
         self.N = N
         self.n_cos = 64
-        self.pis = th.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos).to(self.device)
         self.tau_update = tau_update
         self.LR_QN = LR_QN
         self.qnet_layers = qnet_layers
@@ -1052,19 +1051,14 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
 
         action_dim = get_action_dim(self.action_space)
 
-        self.head = th.nn.Linear(self.features_dim + action_dim, self.qnet_layers[0])
-        self.cos_embedding = th.nn.Linear(self.n_cos, self.qnet_layers[0])
-        self.ff_1 = nn.Linear(self.qnet_layers[0], self.qnet_layers[1])
-        self.ff_2 = nn.Linear(self.qnet_layers[0], 1)
+        # self.head = th.nn.Linear(self.features_dim + action_dim, self.qnet_layers[0])
+        # self.cos_embedding = th.nn.Linear(self.n_cos, self.qnet_layers[0])
+        # self.ff_1 = nn.Linear(self.qnet_layers[0], self.qnet_layers[1])
+        # self.ff_2 = nn.Linear(self.qnet_layers[0], 1)
+        #def __init__(self, state_size, layer_size, n_cos: int = 64):
 
-        self.cost_value_net_target = nn.Sequential(
-            torch.relu(self.head),
-
-        )
-
-        q_net_local = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
-        self.cost_value_net_local = nn.Sequential(*q_net_local)
-
+        self.cost_value_net_local = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N)
+        self.cost_value_net_target = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N)
 
         # self.cost_value_net_target = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
         # self.cost_value_net_local = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
@@ -1081,8 +1075,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 self.mlp_extractor: np.sqrt(2),
                 self.action_net: 0.01,
                 self.value_net: 1,
-                self.cost_value_net_target: 1,
-                self.cost_value_net_local: 1,
+                self.cost_value_net_target: np.sqrt(2),
+                self.cost_value_net_local: np.sqrt(2),
             }
             for module, gain in module_gains.items():
                 module.apply(partial(self.init_weights, gain=gain))
@@ -1119,7 +1113,11 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         qvalue_input = th.cat([features, actions], dim=1)
 
         with th.no_grad():
-            distributional_cost_values = self.cost_value_net_local(qvalue_input)
+            if self.method == 'QRDQN':
+                distributional_cost_values = self.cost_value_net_local(qvalue_input)
+            elif self.method == 'IQN':
+                distributional_cost_values, _ = self.cost_value_net_local(qvalue_input)
+
             if self.type == 'VaR':
                 # Caculate the cost values using VaR method
                 cost_values = distributional_cost_values[:,self.cost_quantile-1].view(distributional_cost_values.shape[0], 1)
@@ -1209,7 +1207,11 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         qvalue_input = th.cat([features, actions], dim=1)
 
         with th.no_grad():
-            distributional_cost_values = self.cost_value_net_local(qvalue_input)
+            if self.method == 'QRDQN':
+                distributional_cost_values = self.cost_value_net_local(qvalue_input)
+            elif self.method == 'IQN':
+                distributional_cost_values, _ = self.cost_value_net_local(qvalue_input)
+
             # cost_values = distributional_cost_values[:,self.cost_quantile-1]
             # cost_values = cost_values.view(distributional_cost_values.shape[0], 1)
             if self.type == 'VaR':
@@ -1566,35 +1568,32 @@ def register_policy(name: str, policy: Type[BasePolicy]) -> None:
     _policy_registry[sub_class][name] = policy
 
 
-class IQN(nn.Module, BaseModel):
-    def __init__(self, state_size, action_size, layer_size, N:int = 8):
+class IQN(nn.Module):
+    def __init__(self, state_size, layer_size, n_cos: int=64, N: int=64):
         super(IQN, self).__init__()
         self.input_shape = state_size
-        self.action_size = action_size
-        self.K = 32
-        self.N = N
-        self.n_cos = 64
+        self.n_cos = n_cos
+        self.N= N
         self.layer_size = layer_size
-        self.pis = torch.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos).to(
-            self.device)  # Starting from 0 as in the paper
+        self.pis = torch.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos)# Starting from 0 as in the paper
 
-        self.head = nn.Linear(self.input_shape[0], layer_size)  # cound be a cnn
-        self.cos_embedding = nn.Linear(self.n_cos, layer_size)
-        self.ff_1 = nn.Linear(layer_size, layer_size)
-        self.ff_2 = nn.Linear(layer_size, action_size)
+        self.head = nn.Linear(self.input_shape, layer_size[0])  # cound be a cnn
+        self.cos_embedding = nn.Linear(self.n_cos, layer_size[0])
+        self.ff_1 = nn.Linear(layer_size[0], layer_size[1])
+        self.ff_2 = nn.Linear(layer_size[1], 1)
         # weight_init([self.head_1, self.ff_1])
 
-    def calc_cos(self, batch_size, n_tau=8):
+    def calc_cos(self, batch_size):
         """
         Calculating the cosinus values depending on the number of tau samples
         """
-        taus = torch.rand(batch_size, n_tau).to(self.device).unsqueeze(-1)  # (batch_size, n_tau, 1)
+        taus = torch.rand(batch_size, self.N).unsqueeze(-1)  # (batch_size, n_tau, 1)
         cos = torch.cos(taus * self.pis)
 
-        assert cos.shape == (batch_size, n_tau, self.n_cos), "cos shape is incorrect"
+        assert cos.shape == (batch_size, self.N, self.n_cos), "cos shape is incorrect"
         return cos, taus
 
-    def forward(self, input, num_tau=8):
+    def forward(self, input):
         """
         Quantile Calculation depending on the number of tau
 
@@ -1606,19 +1605,14 @@ class IQN(nn.Module, BaseModel):
         batch_size = input.shape[0]
 
         x = torch.relu(self.head(input))
-        cos, taus = self.calc_cos(batch_size, num_tau)  # cos shape (batch, num_tau, layer_size)
-        cos = cos.view(batch_size * num_tau, self.n_cos)
-        cos_x = torch.relu(self.cos_embedding(cos)).view(batch_size, num_tau, self.layer_size)  # (batch, n_tau, layer)
+        cos, taus = self.calc_cos(batch_size)  # cos shape (batch, num_tau, layer_size)
+        cos = cos.view(batch_size * self.N, self.n_cos)
+        cos_x = torch.relu(self.cos_embedding(cos)).view(batch_size, self.N, self.layer_size[0])  # (batch, n_tau, layer)
 
         # x has shape (batch, layer_size) for multiplication –> reshape to (batch, 1, layer)
-        x = (x.unsqueeze(1) * cos_x).view(batch_size * num_tau, self.layer_size)
+        x = (x.unsqueeze(1) * cos_x).view(batch_size * self.N, self.layer_size[0])
 
         x = torch.relu(self.ff_1(x))
         out = self.ff_2(x)
-
-        return out.view(batch_size, num_tau, self.action_size), taus
-
-    def get_action(self, inputs):
-        quantiles, _ = self.forward(inputs, self.N)
-        actions = quantiles.mean(dim=1)
-        return actions
+        out1 = out.view(batch_size, self.N)
+        return out.view(batch_size, self.N), taus

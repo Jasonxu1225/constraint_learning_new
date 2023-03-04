@@ -244,36 +244,78 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                 if len(new_actions.shape) != len(new_features.shape):
                     new_actions = new_actions.view(new_features.shape[0], -1)
 
-                with torch.no_grad():
-                    distributional_cost_values_targets_next = self.policy.cost_value_net_target(th.cat([new_features, new_actions], dim=1))
+                if self.policy.method == 'QRDQN':
+                    with torch.no_grad():
+                         distributional_cost_values_targets_next = self.policy.cost_value_net_target(
+                                th.cat([new_features, new_actions], dim=1))
 
-                distributional_cost_values_targets_next = distributional_cost_values_targets_next.unsqueeze(-1).transpose(1,2)
+                         distributional_cost_values_targets_next = distributional_cost_values_targets_next.unsqueeze(
+                                -1).transpose(1,2)
 
-                costs = rollout_data.costs.view(-1,1)
-                dones = rollout_data.dones.view(-1,1)
+                    costs = rollout_data.costs.view(-1,1)
+                    dones = rollout_data.dones.view(-1,1)
 
-                distributional_cost_values_targets = costs.unsqueeze(-1) + \
-                    (self.cost_gamma * distributional_cost_values_targets_next.to(self.device) * (1 - dones.unsqueeze(-1)))
+                    distributional_cost_values_targets = costs.unsqueeze(-1) + \
+                        (self.cost_gamma * distributional_cost_values_targets_next.to(self.device) * (1 - dones.unsqueeze(-1)))
 
-                #compute local cost value
-                #_latent_pi, _latent_vf, _latent_cvf, _latent_sde = self.policy._get_latent(rollout_data.new_observations)
-                with torch.no_grad():
-                    features = self.policy.extract_features(rollout_data.observations)
-                if self.recon_obs:
-                    features = idx2vector(features, height=self.env_configs['map_height'],
-                                          width=self.env_configs['map_width']).to(self.device)
-                if len(actions.shape) != len(features.shape):
-                    actions = actions.view(features.shape[0], -1)
-                distributional_cost_values_expected = self.policy.cost_value_net_local(th.cat([features, actions], dim=1))
-                distributional_cost_values_expected = distributional_cost_values_expected.unsqueeze(-1)
+                    #compute local cost value
+                    #_latent_pi, _latent_vf, _latent_cvf, _latent_sde = self.policy._get_latent(rollout_data.new_observations)
+                    with torch.no_grad():
+                        features = self.policy.extract_features(rollout_data.observations)
+                    if self.recon_obs:
+                        features = idx2vector(features, height=self.env_configs['map_height'],
+                                              width=self.env_configs['map_width']).to(self.device)
+                    if len(actions.shape) != len(features.shape):
+                        actions = actions.view(features.shape[0], -1)
+                    distributional_cost_values_expected = self.policy.cost_value_net_local(th.cat([features, actions], dim=1))
+                    distributional_cost_values_expected = distributional_cost_values_expected.unsqueeze(-1)
 
-                # compute loss
-                td_error = distributional_cost_values_targets - distributional_cost_values_expected
-                huber_l = torch.where(td_error.abs() <= self.hl_kappa_k, 0.5 * td_error.pow(2), self.hl_kappa_k * (td_error.abs() - 0.5 * self.hl_kappa_k))
-                quantil_l = abs(self.policy.quantile_tau.to(self.device) - (td_error.detach() < 0).float()) * huber_l.to(self.device) / 1.0
+                    # compute loss
+                    td_error = distributional_cost_values_targets - distributional_cost_values_expected
+                    huber_l = torch.where(td_error.abs() <= self.hl_kappa_k, 0.5 * td_error.pow(2), self.hl_kappa_k * (td_error.abs() - 0.5 * self.hl_kappa_k))
+                    quantil_l = abs(self.policy.quantile_tau.to(self.device) - (td_error.detach() < 0).float()) * huber_l.to(self.device) / 1.0
 
-                DQ_loss = quantil_l.sum(dim=1).mean(dim=1)  # keepdim=True if per weights get multipl
-                DQ_loss = DQ_loss.mean()
+                    DQ_loss = quantil_l.sum(dim=1).mean(dim=1)  # keepdim=True if per weights get multipl
+                    DQ_loss = DQ_loss.mean()
+
+                elif self.policy.method == 'IQN':
+                    with torch.no_grad():
+                            distributional_cost_values_targets_next, _ = self.policy.cost_value_net_target(
+                                th.cat([new_features, new_actions], dim=1))
+
+                            distributional_cost_values_targets_next = distributional_cost_values_targets_next.unsqueeze(
+                                -1).transpose(1, 2)
+
+                    costs = rollout_data.costs.view(-1, 1)
+                    dones = rollout_data.dones.view(-1, 1)
+
+                    distributional_cost_values_targets = costs.unsqueeze(-1) + \
+                                                         (self.cost_gamma * distributional_cost_values_targets_next.to(
+                                                             self.device) * (1 - dones.unsqueeze(-1)))
+
+                    # compute local cost value
+                    # _latent_pi, _latent_vf, _latent_cvf, _latent_sde = self.policy._get_latent(rollout_data.new_observations)
+                    with torch.no_grad():
+                        features = self.policy.extract_features(rollout_data.observations)
+                    if self.recon_obs:
+                        features = idx2vector(features, height=self.env_configs['map_height'],
+                                              width=self.env_configs['map_width']).to(self.device)
+                    if len(actions.shape) != len(features.shape):
+                        actions = actions.view(features.shape[0], -1)
+                    distributional_cost_values_expected, taus = self.policy.cost_value_net_local(
+                        th.cat([features, actions], dim=1))
+                    distributional_cost_values_expected = distributional_cost_values_expected.unsqueeze(-1)
+
+                    # compute loss
+                    td_error = distributional_cost_values_targets - distributional_cost_values_expected
+                    huber_l = torch.where(td_error.abs() <= self.hl_kappa_k, 0.5 * td_error.pow(2),
+                                          self.hl_kappa_k * (td_error.abs() - 0.5 * self.hl_kappa_k))
+                    quantil_l = abs(
+                        taus.to(self.device) - (td_error.detach() < 0).float()) * huber_l.to(
+                        self.device) / 1.0
+
+                    DQ_loss = quantil_l.sum(dim=1).mean(dim=1)  # keepdim=True if per weights get multipl
+                    DQ_loss = DQ_loss.mean()
 
                 cost_value_losses.append(DQ_loss.item())
 
