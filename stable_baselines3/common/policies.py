@@ -843,6 +843,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         type: str = 'VaR',
         prob_yita = 0.01,
         method: str = None,
+        device: Union[th.device, str] = "cpu",
     ):
         # Default network architecture, from stable-baselines
         if net_arch is None:
@@ -879,7 +880,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         if method == 'QRDQN':
             self.dis_build_QRDQN(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
         elif method == 'IQN':
-            self.dis_build_IQN(lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
+            self.dis_build_IQN(device, lr_schedule, N, tau_update, LR_QN, qnet_layers, recon_obs)
 
 
 
@@ -1003,7 +1004,7 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         self.optimizer_QN = self.optimizer_class(self.cost_value_net_local.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
         self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
 
-    def dis_build_IQN(self, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
+    def dis_build_IQN(self, device, lr_schedule: Callable[[float], float], N, tau_update, LR_QN, qnet_layers, recon_obs: bool = False) -> None:
         """
         Create the networks and the optimizer.
 
@@ -1057,8 +1058,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         # self.ff_2 = nn.Linear(self.qnet_layers[0], 1)
         #def __init__(self, state_size, layer_size, n_cos: int = 64):
 
-        self.cost_value_net_local = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N)
-        self.cost_value_net_target = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N)
+        self.cost_value_net_local = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N, device)
+        self.cost_value_net_target = IQN(self.features_dim + action_dim, self.qnet_layers, self.n_cos, self.N, device)
 
         # self.cost_value_net_target = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
         # self.cost_value_net_local = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
@@ -1569,13 +1570,14 @@ def register_policy(name: str, policy: Type[BasePolicy]) -> None:
 
 
 class IQN(nn.Module):
-    def __init__(self, state_size, layer_size, n_cos: int=64, N: int=64):
+    def __init__(self, state_size, layer_size, n_cos: int=64, N: int=64, device: str = 'cpu'):
         super(IQN, self).__init__()
+        self.device = device
         self.input_shape = state_size
         self.n_cos = n_cos
         self.N= N
         self.layer_size = layer_size
-        self.pis = torch.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos)# Starting from 0 as in the paper
+        self.pis = torch.FloatTensor([np.pi * i for i in range(self.n_cos)]).view(1, 1, self.n_cos).to(self.device)# Starting from 0 as in the paper
 
         self.head = nn.Linear(self.input_shape, layer_size[0])  # cound be a cnn
         self.cos_embedding = nn.Linear(self.n_cos, layer_size[0])
@@ -1587,8 +1589,8 @@ class IQN(nn.Module):
         """
         Calculating the cosinus values depending on the number of tau samples
         """
-        taus = torch.rand(batch_size, self.N).unsqueeze(-1)  # (batch_size, n_tau, 1)
-        cos = torch.cos(taus * self.pis)
+        taus = torch.rand(batch_size, self.N).to(self.device).unsqueeze(-1)  # (batch_size, n_tau, 1)
+        cos = torch.cos(taus * self.pis).to(self.device)
 
         assert cos.shape == (batch_size, self.N, self.n_cos), "cos shape is incorrect"
         return cos, taus

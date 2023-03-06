@@ -260,7 +260,8 @@ def load_ppo_config(config, train_env, seed, log_file):
                                       qnet_layers=config['IQN']['qnet_layers'],
                                       type=config['IQN']['type'],
                                       prob_yita=config['IQN']['prob_yita'],
-                                      method='IQN'),
+                                      method='IQN',
+                                      device=config['device']),
             })
         if 'WGW' in config['env']['train_env_id'] and config['group'] == "PPO-Lag":
             ppo_parameters.update({
