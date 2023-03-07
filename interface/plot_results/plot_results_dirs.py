@@ -1030,9 +1030,44 @@ def get_plot_results_dir(env_id):
                 '../save_model/2.21/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-21-2023-19:39-seed_666/',
             ],
             "PPO_dis_lag_with-action_noise-1e-1-storebygame": [
-                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Feb-22-2023-19:29-seed_123/',
-                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Feb-22-2023-19:31-seed_321/',
-                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Feb-22-2023-19:31-seed_666/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:41-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:42-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:42-seed_666/',
+            ],
+            "PPO_IQN_lag_with-action_noise-1e-1-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:18-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:21-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:21-seed_666/',
+            ],
+            "PPO_lag_with-action_noise-1e-2-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:52-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:52-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:53-seed_666/',
+            ],
+            "PPO_dis_lag_with-action_noise-1e-2-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:40-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:40-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:41-seed_666/',
+            ],
+            "PPO_IQN_lag_with-action_noise-1e-2-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:17-seed_123/',
+                #'../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:17-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:18-seed_666/',
+            ],
+            "PPO_lag_with-action_noise-1e-3-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:55-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:56-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_lag_HCWithPos-v0-storebygame-multi_env-Feb-23-2023-16:56-seed_666/',
+            ],
+            "PPO_dis_lag_with-action_noise-1e-3-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:38-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:39-seed_321/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-15:39-seed_666/',
+            ],
+            "PPO_IQN_lag_with-action_noise-1e-3-storebygame": [
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:15-seed_123/',
+                '../save_model/PPO-Lag-HC/train_ppo_dis_lag_IQN_HCWithPos-v0-storebygame-multi_env-Mar-06-2023-17:17-seed_666/',
+                #'../save_model/PPO-Lag-HC//',
             ],
             "PPO_with-action_noise-1e-1-storebygame": [
                 # '../save_model/PPO-HC/train_ppo_HCWithPos-v0-storebygame-multi_env-Jan-11-2023-22:38-seed_123/',
