@@ -15,7 +15,6 @@ from stable_baselines3.common.on_policy_algorithm import \
 from stable_baselines3.common.policies import ActorCriticPolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback
 from stable_baselines3.common.utils import explained_variance, get_schedule_fn
-from utils.data_utils import idx2vector
 
 class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
     """
@@ -152,6 +151,27 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
         if _init_setup_model:
             self._setup_model()
 
+    def idx2vector(self, indices, height, width):
+        vector_all = []
+        if isinstance(indices, torch.Tensor):
+            for idx in indices:
+                map = np.zeros(shape=[height, width])
+                x, y = int(torch.round(idx[0])), int(torch.round(idx[1]))
+                # if x - idx[0] != 0:
+                #     print('debug')
+                map[x, y] = 1  # + idx[0] - x + idx[1] - y
+                vector_all.append(map.flatten())
+            return torch.Tensor(np.array(vector_all))
+        else:
+            for idx in indices:
+                map = np.zeros(shape=[height, width])
+                x, y = int(round(idx[0], 0)), int(round(idx[1], 0))
+                # if x - idx[0] != 0:
+                #     print('debug')
+                map[x, y] = 1  # + idx[0] - x + idx[1] - y
+                vector_all.append(map.flatten())
+            return np.asarray(vector_all)
+
     def _setup_model(self) -> None:
         super(PPODistributionalLagrangian, self)._setup_model()
 
@@ -239,7 +259,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                     # Convert discrete action from float to long
                     new_actions = new_actions.long().flatten()
                 if self.recon_obs:
-                    new_features = idx2vector(new_features, height=self.env_configs['map_height'],
+                    new_features = self.idx2vector(new_features, height=self.env_configs['map_height'],
                                               width=self.env_configs['map_width']).to(self.device)
                 if len(new_actions.shape) != len(new_features.shape):
                     new_actions = new_actions.view(new_features.shape[0], -1)
@@ -263,7 +283,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                     with torch.no_grad():
                         features = self.policy.extract_features(rollout_data.observations)
                     if self.recon_obs:
-                        features = idx2vector(features, height=self.env_configs['map_height'],
+                        features = self.idx2vector(features, height=self.env_configs['map_height'],
                                               width=self.env_configs['map_width']).to(self.device)
                     if len(actions.shape) != len(features.shape):
                         actions = actions.view(features.shape[0], -1)
@@ -298,7 +318,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
                     with torch.no_grad():
                         features = self.policy.extract_features(rollout_data.observations)
                     if self.recon_obs:
-                        features = idx2vector(features, height=self.env_configs['map_height'],
+                        features = self.idx2vector(features, height=self.env_configs['map_height'],
                                               width=self.env_configs['map_width']).to(self.device)
                     if len(actions.shape) != len(features.shape):
                         actions = actions.view(features.shape[0], -1)
