@@ -18,7 +18,7 @@ from utils.env_utils import check_if_duplicate_seed
 from common.cns_env import make_train_env, make_eval_env, sync_envs_normalization_ppo
 from utils.plot_utils import plot_curve
 from exploration.exploration import ExplorationRewardCallback
-from stable_baselines3 import PPO, PPOLagrangian, PPODistributionalLagrangian
+from stable_baselines3 import PPO, PPOLagrangian, PPODistributionalLagrangian, PPODistributionalLagrangianCostAdv
 from stable_baselines3.common import logger
 from common.cns_evaluation import evaluate_icrl_policy
 from stable_baselines3.common.vec_env import VecNormalize
@@ -199,7 +199,10 @@ def train(args):
                 "env_configs": env_configs,
             })
         if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
-            create_policy_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
+            if config['QRDQN']['cost_adv'] == True:
+                create_policy_agent = lambda: PPODistributionalLagrangianCostAdv(**ppo_parameters)
+            else:
+                create_policy_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
         else:
             create_policy_agent = lambda: PPOLagrangian(**ppo_parameters)
     elif config['group'] == 'PI-Lag':

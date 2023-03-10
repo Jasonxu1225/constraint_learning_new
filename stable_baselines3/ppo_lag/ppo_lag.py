@@ -266,6 +266,11 @@ class PPOLagrangian(OnPolicyWithCostAlgorithm):
                 # Value loss using the TD(gae_lambda) target
                 reward_value_loss = F.mse_loss(rollout_data.reward_returns, reward_values_pred)
                 cost_value_loss = F.mse_loss(rollout_data.cost_returns, cost_values_pred)
+                # print(th.mean(rollout_data.cost_returns))
+                # print(th.mean(cost_values_pred))
+                # print(th.mean(cost_value_loss))
+                # print('---------------------------------------')
+
                 reward_value_losses.append(reward_value_loss.item())
                 cost_value_losses.append(cost_value_loss.item())
 

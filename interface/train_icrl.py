@@ -26,7 +26,7 @@ from constraint_models.constraint_net.variational_constraint_net import Variatio
 from constraint_models.constraint_net.constraint_net import ConstraintNet
 from exploration.exploration import ExplorationRewardCallback
 from stable_baselines3 import PPOLagrangian
-from stable_baselines3 import PPODistributionalLagrangian
+from stable_baselines3 import PPODistributionalLagrangian, PPODistributionalLagrangianCostAdv
 from stable_baselines3.common import logger
 from stable_baselines3.common.base_class import set_random_seed
 from stable_baselines3.common.vec_env import sync_envs_normalization, VecNormalize
@@ -377,7 +377,10 @@ def train(config):
                                          log_file=log_file)
         # create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
         if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
-            create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
+            if config['QRDQN']['cost_adv'] == True:
+                create_nominal_agent = lambda: PPODistributionalLagrangianCostAdv(**ppo_parameters)
+            else:
+                create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)
         else:
             create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
         reset_policy = config['PPO']['reset_policy']
