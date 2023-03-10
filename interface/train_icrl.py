@@ -377,7 +377,7 @@ def train(config):
                                          log_file=log_file)
         # create_nominal_agent = lambda: PPOLagrangian(**ppo_parameters)
         if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
-            if config['QRDQN']['cost_adv'] == True:
+            if 'cost_adv' in config['PPO'].keys() and config['PPO']['cost_adv'] == True:
                 create_nominal_agent = lambda: PPODistributionalLagrangianCostAdv(**ppo_parameters)
             else:
                 create_nominal_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)

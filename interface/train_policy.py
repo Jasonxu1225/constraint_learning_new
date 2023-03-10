@@ -199,7 +199,7 @@ def train(args):
                 "env_configs": env_configs,
             })
         if config['PPO']['policy_name'] == "DistributionalTwoCriticsMlpPolicy":
-            if config['QRDQN']['cost_adv'] == True:
+            if 'cost_adv' in config['PPO'].keys() and config['PPO']['cost_adv'] == True:
                 create_policy_agent = lambda: PPODistributionalLagrangianCostAdv(**ppo_parameters)
             else:
                 create_policy_agent = lambda: PPODistributionalLagrangian(**ppo_parameters)

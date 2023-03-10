@@ -1283,16 +1283,6 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(self.updata_tau * local_param.data + (1.0 - self.updata_tau) * target_param.data)
 
-    def calc_cos(self, batch_size, n_tau=8):
-        """
-        Calculating the cosinus values depending on the number of tau samples
-        """
-        taus = torch.rand(batch_size, n_tau).to(self.device).unsqueeze(-1) #(batch_size, n_tau, 1)
-        cos = torch.cos(taus*self.pis)
-
-        assert cos.shape == (batch_size,n_tau,self.n_cos), "cos shape is incorrect"
-        return cos, taus
-
 
 class ActorCriticCnnPolicy(ActorCriticPolicy):
     """
