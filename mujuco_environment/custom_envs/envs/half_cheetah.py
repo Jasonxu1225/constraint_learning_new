@@ -2,6 +2,8 @@ import os
 
 import gym
 import numpy as np
+import numpy.random
+import torch
 from gym import utils
 from gym.envs.mujoco import mujoco_env
 from gym.envs.mujoco.half_cheetah import HalfCheetahEnv
@@ -226,6 +228,7 @@ class HalfCheetahWithPosNoise(HalfCheetahWithPos):
         self.noise_mean = noise_mean
         self.noise_std = noise_std
         self.noise_seed = noise_seed
+        self.rdm = numpy.random.RandomState(1)
         super().__init__()
 
     def _get_obs(self):
@@ -291,12 +294,14 @@ class HalfCheetahWithPosNoise(HalfCheetahWithPos):
         xposafter = self.sim.data.qpos[0]
 
         # add noise to the transition function
-        #np.random.seed(self.noise_seed)
-        # np.random.seed(100)
-        qpos = self.sim.data.qpos.flat[:] + np.random.normal(self.noise_mean, self.noise_std)
-        #np.random.seed(self.noise_seed)
-        # np.random.seed(100)
-        qvel = self.sim.data.qvel.flat[:] + np.random.normal(self.noise_mean, self.noise_std)
+        # uniform noise in the range of [-reset_noise_scale, reset_noise_scale] is added to the positional values
+        # standard normal noise with a mean of 0 and standard deviation of reset_noise_scale is added to the initial velocity values
+
+        noise_qpos = self.rdm.uniform(-(self.noise_mean+self.noise_std), self.noise_mean+self.noise_std, self.model.nq)
+        noise_qvel = self.rdm.normal(self.noise_mean, self.noise_std, self.model.nv)
+
+        qpos = self.sim.data.qpos.flat[:] + noise_qpos
+        qvel = self.sim.data.qvel.flat[:] + noise_qvel
 
         self.set_state(qpos=qpos, qvel=qvel)
 
