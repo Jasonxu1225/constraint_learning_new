@@ -1160,6 +1160,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                         if quant_value >= self.prob_yita:
                             num[i] = num[i] + 1
                     cost_values[i] = num[i] *1.0 / self.N
+            elif self.type == 'Expectation':
+                cost_values = torch.mean(distributional_cost_values, dim=1).view(distributional_cost_values.shape[0], 1)
 
         return actions, values, cost_values, log_prob
 
@@ -1256,6 +1258,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                         if quant_value >= self.prob_yita:
                             num[i] = num[i] + 1
                     cost_values[i] = num[i] *1.0 / self.N
+            elif self.type == 'Expectation':
+                cost_values = torch.mean(distributional_cost_values, dim=1).view(distributional_cost_values.shape[0], 1)
 
         return values, cost_values, log_prob, distribution.entropy()
 
