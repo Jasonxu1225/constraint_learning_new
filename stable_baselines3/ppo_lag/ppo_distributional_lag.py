@@ -424,8 +424,8 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
 
                 loss = (policy_loss # -L-clip
                         + (self.ent_coef+0.01) * entropy_loss # -entropy_loss
-                        + (self.reward_vf_coef-0.005) * reward_value_loss # reward_value_loss
-                        + (self.cost_vf_coef-0.005) * cost_value_loss)
+                        + (self.reward_vf_coef-0.01) * reward_value_loss) # reward_value_loss
+                        #+ (self.cost_vf_coef-0.005) * cost_value_loss)
 
                 # loss = (policy_loss # -L-clip
                 #         + self.ent_coef * entropy_loss # -entropy_loss
@@ -930,8 +930,8 @@ class PPODistributionalLagrangianCostAdv(OnPolicyWithCostAlgorithm):
 
                 loss = (policy_loss # -L-clip
                         + (self.ent_coef+0.01) * entropy_loss # -entropy_loss
-                        + (self.reward_vf_coef-0.005) * reward_value_loss # reward_value_loss
-                        + (self.cost_vf_coef-0.005) * cost_value_loss)
+                        + (self.reward_vf_coef-0.01) * reward_value_loss) # reward_value_loss
+                        #+ (self.cost_vf_coef-0.005) * cost_value_loss)
 
                 # Optimization step
                 self.policy.optimizer.zero_grad()
