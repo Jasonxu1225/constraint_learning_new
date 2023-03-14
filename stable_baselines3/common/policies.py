@@ -971,11 +971,14 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
 
         action_dim = get_action_dim(self.action_space)
 
-        q_net_target = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
-        self.cost_value_net_target = nn.Sequential(*q_net_target)
+        # q_net_target = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
+        # self.cost_value_net_target = nn.Sequential(*q_net_target)
+        #
+        # q_net_local = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
+        # self.cost_value_net_local = nn.Sequential(*q_net_local)
 
-        q_net_local = create_mlp(self.features_dim + action_dim, self.N, self.qnet_layers)
-        self.cost_value_net_local = nn.Sequential(*q_net_local)
+        self.cost_value_net_local = QRDQN(self.features_dim + action_dim, self.qnet_layers, self.N)
+        self.cost_value_net_target = QRDQN(self.features_dim + action_dim, self.qnet_layers, self.N)
 
 
         # self.cost_value_net_target = nn.Linear(self.mlp_extractor.latent_dim_cvf, self.N)
@@ -993,8 +996,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 self.mlp_extractor: np.sqrt(2),
                 self.action_net: 0.01,
                 self.value_net: 1,
-                self.cost_value_net_target: np.sqrt(2),
-                self.cost_value_net_local: np.sqrt(2),
+                # self.cost_value_net_target: np.sqrt(2),
+                # self.cost_value_net_local: np.sqrt(2),
             }
             for module, gain in module_gains.items():
                 module.apply(partial(self.init_weights, gain=gain))
@@ -1076,8 +1079,8 @@ class DistributionalActorTwoCriticsPolicy(ActorCriticPolicy):
                 self.mlp_extractor: np.sqrt(2),
                 self.action_net: 0.01,
                 self.value_net: 1,
-                self.cost_value_net_target: np.sqrt(2),
-                self.cost_value_net_local: np.sqrt(2),
+                # self.cost_value_net_target: np.sqrt(2),
+                # self.cost_value_net_local: np.sqrt(2),
             }
             for module, gain in module_gains.items():
                 module.apply(partial(self.init_weights, gain=gain))
@@ -1562,10 +1565,35 @@ def register_policy(name: str, policy: Type[BasePolicy]) -> None:
             raise ValueError(f"Error: the name {name} is already registered for a different policy, will not override.")
     _policy_registry[sub_class][name] = policy
 
+def weight_init(layers):
+    for layer in layers:
+        torch.nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
+
+
+class QRDQN(nn.Module):
+    def __init__(self, state_size, layer_size, N, seed: int=0):
+        super(QRDQN, self).__init__()
+        self.seed = torch.manual_seed(seed)
+        self.input_shape = state_size
+        self.N = N
+
+        self.head_1 = nn.Linear(self.input_shape, layer_size[0])
+        self.ff_1 = nn.Linear(layer_size[0], layer_size[1])
+        self.ff_2 = nn.Linear(layer_size[1], self.N)
+        weight_init([self.head_1, self.ff_1, self.ff_2])
+
+    def forward(self, input):
+
+        x = torch.relu(self.head_1(input))
+        x = torch.relu(self.ff_1(x))
+        out = self.ff_2(x)
+
+        return out.view(input.shape[0], self.N)
 
 class IQN(nn.Module):
-    def __init__(self, state_size, layer_size, n_cos: int=64, N: int=64, device: str = 'cpu'):
+    def __init__(self, state_size, layer_size, n_cos: int=64, N: int=64, device: str = 'cpu', seed: int=0):
         super(IQN, self).__init__()
+        self.seed = torch.manual_seed(seed)
         self.device = device
         self.input_shape = state_size
         self.n_cos = n_cos
@@ -1577,7 +1605,7 @@ class IQN(nn.Module):
         self.cos_embedding = nn.Linear(self.n_cos, layer_size[0])
         self.ff_1 = nn.Linear(layer_size[0], layer_size[1])
         self.ff_2 = nn.Linear(layer_size[1], 1)
-        # weight_init([self.head_1, self.ff_1])
+        weight_init([self.cos_embedding, self.head, self.ff_1, self.ff_2])
 
     def calc_cos(self, batch_size):
         """
@@ -1610,5 +1638,5 @@ class IQN(nn.Module):
 
         x = torch.relu(self.ff_1(x))
         out = self.ff_2(x)
-        out1 = out.view(batch_size, self.N)
+        #out1 = out.view(batch_size, self.N)
         return out.view(batch_size, self.N), taus
