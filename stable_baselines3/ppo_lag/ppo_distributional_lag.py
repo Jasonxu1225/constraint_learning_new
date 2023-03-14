@@ -210,6 +210,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
         """
         # Update optimizer learning rate
         self._update_learning_rate(self.policy.optimizer)
+        self._update_learning_rate(self.policy.optimizer_QN)
         # Compute current clip range
         clip_range = self.clip_range(self._current_progress_remaining)
         # Optional: clip range for the value functions
@@ -275,7 +276,7 @@ class PPODistributionalLagrangian(OnPolicyWithCostAlgorithm):
 
                     costs = rollout_data.costs.view(-1,1)
                     dones = rollout_data.dones.view(-1,1)
-
+                    # (observations, actions, costs, dones, new_obs, new_actions)
                     distributional_cost_values_targets = costs.unsqueeze(-1) + \
                         (self.cost_gamma * distributional_cost_values_targets_next.to(self.device) * (1 - dones.unsqueeze(-1)))
 
@@ -711,6 +712,7 @@ class PPODistributionalLagrangianCostAdv(OnPolicyWithCostAlgorithm):
         """
         # Update optimizer learning rate
         self._update_learning_rate(self.policy.optimizer)
+        self._update_learning_rate(self.policy.optimizer_QN)
         # Compute current clip range
         clip_range = self.clip_range(self._current_progress_remaining)
         # Optional: clip range for the value functions
